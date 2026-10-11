@@ -26,13 +26,23 @@
     "defi",
     "perps",
     "lightweight-charts",
-    "cloudflare-pages"
+    "cloudflare-pages",
+    "tvl",
+    "open-interest",
+    "perpetuals",
+    "dune-alternative",
+    "defillama",
+    "json-api",
+    "typescript",
+    "crypto",
+    "web3",
+    "on-chain-analytics"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nirholas/papertrade-analytics.git"
   },
-  "homepage": "https://github.com/nirholas/papertrade-analytics#readme",
+  "homepage": "https://papertrade-analytics.pages.dev",
   "bugs": {
     "url": "https://github.com/nirholas/papertrade-analytics/issues"
   },
