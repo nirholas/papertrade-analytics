@@ -5,15 +5,17 @@
 [![HyperEVM](https://img.shields.io/badge/HyperEVM-chain_999-0a8f5b?style=flat-square)](https://papertrade.xyz)
 [![GitHub stars](https://img.shields.io/github/stars/nirholas/papertrade-analytics?style=flat-square&color=0a8f5b)](https://github.com/nirholas/papertrade-analytics/stargazers)
 [![Last commit](https://img.shields.io/github/last-commit/nirholas/papertrade-analytics?style=flat-square&color=0a8f5b)](https://github.com/nirholas/papertrade-analytics/commits/main)
+[![MCP](https://img.shields.io/badge/MCP-streamable_http-0a8f5b?style=flat-square)](https://papertrade-analytics.pages.dev/docs/mcp)
+[![Docs](https://img.shields.io/badge/docs-papertrade--analytics.pages.dev-0a8f5b?style=flat-square)](https://papertrade-analytics.pages.dev/docs/)
 [![Unofficial](https://img.shields.io/badge/community-unofficial-lightgrey?style=flat-square)](#the-papertrade-toolkit)
 
-[Live site](https://papertrade-analytics.pages.dev) · [Issues](https://github.com/nirholas/papertrade-analytics/issues) · [Discussions](https://github.com/nirholas/papertrade-analytics/discussions) · [Papertrade](https://papertrade.xyz) · [Toolkit](#the-papertrade-toolkit)
+[Live site](https://papertrade-analytics.pages.dev) · [Docs](https://papertrade-analytics.pages.dev/docs/) · [MCP](#mcp-server-and-connectors) · [Issues](https://github.com/nirholas/papertrade-analytics/issues) · [Discussions](https://github.com/nirholas/papertrade-analytics/discussions) · [Papertrade](https://papertrade.xyz) · [Toolkit](#the-papertrade-toolkit)
 
-Unofficial live protocol analytics for [Papertrade](https://papertrade.xyz), the fully on-chain 1000x synthetic perps exchange on Hyperliquid's HyperEVM (chain 999). A DefiLlama and Dune style dashboard plus a keyless JSON API, built as a Cloudflare Pages app on the verified [papertrade-sdk](https://github.com/nirholas/papertrade-sdk).
+Unofficial live protocol analytics for [Papertrade](https://papertrade.xyz), the fully on-chain 1000x synthetic perps exchange on Hyperliquid's HyperEVM (chain 999). A DefiLlama and Dune style dashboard plus a keyless JSON API and a read-only MCP server for AI assistants, built as a Cloudflare Pages app on the verified [papertrade-sdk](https://github.com/nirholas/papertrade-sdk).
 
 > Unofficial, not affiliated with Papertrade. High leverage can lose your whole margin. Nothing here is financial advice.
 
-Live site: https://papertrade-analytics.pages.dev (after you deploy it, see below).
+Live site: https://papertrade-analytics.pages.dev. Docs: https://papertrade-analytics.pages.dev/docs/. MCP endpoint: `https://papertrade-analytics.pages.dev/mcp`.
 
 ## What you get
 
@@ -37,8 +39,29 @@ curl https://papertrade-analytics.pages.dev/api/snapshots
 |---|---|
 | `GET /api/metrics` | Protocol totals, deltas, per-market stats, PAPER economics and staking. Responses carry `X-Cache: HIT` or `MISS`. A 502 JSON error is returned when the upstream is down. |
 | `GET /api/snapshots` | House-book snapshots recorded every 5 minutes (needs the optional KV binding, otherwise an empty list). |
+| `POST /mcp` | MCP server, see above. |
 | `GET /openapi.json` | OpenAPI 3.1 document. |
 | `/api/papertrade/*` | Same-origin proxy to `exchange.papertrade.xyz` (Papertrade sends no CORS headers), used by the browser app. |
+
+## MCP server and connectors
+
+A keyless, read-only [Model Context Protocol](https://modelcontextprotocol.io) server runs at `https://papertrade-analytics.pages.dev/mcp` (Streamable HTTP, stateless). Eight tools: `get_protocol_snapshot`, `get_history`, `get_open_interest`, `get_paper_economics`, `get_market_stats`, `get_top_traders`, `get_position_insights` and the simulation-only `quote_position_outcome`. No tool signs, sends, trades or places orders.
+
+```bash
+claude mcp add --transport http papertrade-analytics https://papertrade-analytics.pages.dev/mcp   # Claude Code
+codex mcp add papertrade-analytics --url https://papertrade-analytics.pages.dev/mcp                # Codex
+gemini mcp add --transport http papertrade-analytics https://papertrade-analytics.pages.dev/mcp   # Gemini CLI
+```
+
+Cursor, VS Code, Claude Desktop and claude.ai, ChatGPT developer mode, the Claude and OpenAI APIs, Windsurf, Zed, Cline, Goose and Continue are covered in [Connect your AI](https://papertrade-analytics.pages.dev/docs/connect). Agents can discover everything from [`/llms.txt`](https://papertrade-analytics.pages.dev/llms.txt), [`/.well-known/mcp/server-card.json`](https://papertrade-analytics.pages.dev/.well-known/mcp/server-card.json), [`/.well-known/agent-card.json`](https://papertrade-analytics.pages.dev/.well-known/agent-card.json) and [`/openapi.json`](https://papertrade-analytics.pages.dev/openapi.json). The registry manifest is [`server.json`](server.json) (`io.github.nirholas/papertrade-analytics`). Smoke test: `npm run mcp:inspect`.
+
+## Documentation
+
+Full docs live in [`docs/`](docs) and are published at https://papertrade-analytics.pages.dev/docs/ (search, per-page markdown at `.md`, and `llms-full.txt`). `npm run build:site` renders them with `scripts/build-docs.mjs` and generates the discovery files from the same tool registry the server runs.
+
+## Embedding
+
+`?embed=1` shows only the product (no marketing chrome) and the site may be framed by [Papertrade OS](https://papertrade-os.pages.dev/?open=analytics) and other `*.pages.dev` hosts.
 
 ## Quick start
 
@@ -49,14 +72,16 @@ npm install
 npm run dev:site        # builds and serves http://localhost:8791 with a local KV
 ```
 
-Scripts: `npm run typecheck` (root and `site/functions`), `npm test` (recorded fixtures), `npm run test:live` (production), `npm run build:site`.
+Scripts: `npm run typecheck` (root and `site/functions`), `npm test` (recorded fixtures), `npm run test:live` (production), `npm run build:site` (docs, discovery files, app bundle).
 
 ## Architecture
 
 - `src/`: pure, unit-tested transforms (`transforms`, `house`, `insights`, `metrics`, `csv`, `format`) plus `sources.ts`, which collects live inputs through the SDK. Shared by the browser and the Functions.
+- `site/functions/mcp.ts` with `_lib/mcp.ts` (generic JSON-RPC and Streamable HTTP plumbing), `_lib/tools.ts` (the eight tools over an injectable `DataSource`), `_lib/server.ts` (identity and instructions) and `_lib/metrics-source.ts` (the 30s cache shared with the REST API).
+- `docs/`, `scripts/`: markdown sources, docs renderer and discovery generator.
 - `site/functions/api/metrics.ts`: builds the metrics document (SDK reads, Hyperliquid candles, HyperEVM reads for PAPER supply), caches it 30s with the Cache API. If every HyperEVM RPC rate-limits, it uses a recent last-good read and then the indexer values, and reports it in `source.onchain`.
 - `site/app.ts` and `site/app/`: the browser app, bundled by esbuild into `site/public/app.js`. All protocol math comes from `papertrade-sdk` (`estimateClose`, `liquidationPriceRaw`, `paperMintRate`, `impactScale`).
-- Strict CSP (`site/public/_headers`): no inline scripts, no external origins. `lightweight-charts` injects one `<style>` element, allowed by its SHA-256 hash. Update the hash if you bump the library (the browser console prints the new one).
+- Strict CSP (`site/public/_headers`): no inline scripts, no external origins; the dashboard may be framed only by Papertrade OS and `*.pages.dev`. `lightweight-charts` injects one `<style>` element, allowed by its SHA-256 hash. Update the hash if you bump the library (the browser console prints the new one).
 - All API and on-chain strings (trader names) are HTML-escaped before rendering.
 
 Data semantics worth knowing: the protocol history is columnar and close-stamped, volume, trader PnL, liquidations, trades and users are cumulative while staker revenue is per bucket, and the history has no LP or open-interest column. Those two charts come from `/state/house/current` (a short rolling window) and, when KV is bound, from recorded snapshots.

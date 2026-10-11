@@ -1,11 +1,12 @@
 {
   "name": "papertrade-analytics",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Unofficial live protocol analytics dashboard and JSON API for Papertrade (papertrade.xyz), the 1000x synthetic perps exchange on HyperEVM: TVL, volume, LP, open interest, markets, PAPER economics and leaderboard insights.",
+  "description": "Unofficial live protocol analytics dashboard and JSON API for Papertrade (papertrade.xyz), the 1000x synthetic perps exchange on HyperEVM: TVL, volume, LP, open interest, markets, PAPER economics and leaderboard insights. Includes a keyless read-only MCP server for Claude, Codex, ChatGPT, Gemini and Cursor.",
   "license": "Apache-2.0",
   "author": "nirholas",
   "type": "module",
+  "mcpName": "io.github.nirholas/papertrade-analytics",
   "engines": {
     "node": ">=20"
   },
@@ -13,9 +14,12 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p site/functions",
     "test": "vitest run",
     "test:live": "PAPERTRADE_LIVE=1 vitest run test/live.test.ts",
-    "build:site": "esbuild site/app.ts --bundle --format=esm --minify --target=es2022 --sourcemap --outfile=site/public/app.js",
+    "build:site": "node scripts/build-discovery.mjs && esbuild site/app.ts --bundle --format=esm --minify --target=es2022 --sourcemap --outfile=site/public/app.js",
     "dev:site": "npm run build:site && cd site && wrangler pages dev --port 8791 --kv SNAPSHOTS",
-    "deploy:site": "npm run build:site && cd site && wrangler pages deploy"
+    "deploy:site": "npm run build:site && cd site && wrangler pages deploy",
+    "build:docs": "node scripts/build-docs.mjs",
+    "build:discovery": "node scripts/build-discovery.mjs",
+    "mcp:inspect": "npx @modelcontextprotocol/inspector --cli https://papertrade-analytics.pages.dev/mcp --transport http --method tools/list"
   },
   "keywords": [
     "papertrade",
@@ -36,7 +40,18 @@
     "typescript",
     "crypto",
     "web3",
-    "on-chain-analytics"
+    "on-chain-analytics",
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "ai-agents",
+    "claude",
+    "codex",
+    "chatgpt",
+    "gemini",
+    "cursor",
+    "llms-txt",
+    "a2a"
   ],
   "repository": {
     "type": "git",
@@ -55,6 +70,7 @@
     "@cloudflare/workers-types": "^5.20261010.1",
     "@types/node": "^26.6.5",
     "esbuild": "^0.28.2",
+    "marked": "^16.4.2",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3",
     "wrangler": "^4.149.0"
