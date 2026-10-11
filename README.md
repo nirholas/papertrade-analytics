@@ -75,4 +75,4 @@ Optional history: `npx wrangler kv namespace create SNAPSHOTS`, then bind it as 
 
 ## License
 
-MIT. Unofficial, not affiliated with Papertrade, high leverage can lose your whole margin.
+Apache-2.0. Unofficial, not affiliated with Papertrade, high leverage can lose your whole margin.

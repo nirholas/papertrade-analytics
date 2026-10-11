@@ -5,8 +5,8 @@
     "version": "0.1.0",
     "description": "Unofficial JSON API behind papertrade-analytics. Aggregates the public Papertrade API, Hyperliquid candles and HyperEVM reads. Not affiliated with Papertrade. High leverage can lose your whole margin.",
     "license": {
-      "name": "MIT",
-      "url": "https://opensource.org/licenses/MIT"
+      "name": "Apache-2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
     }
   },
   "servers": [

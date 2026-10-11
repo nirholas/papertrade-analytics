@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Unofficial live protocol analytics dashboard and JSON API for Papertrade (papertrade.xyz), the 1000x synthetic perps exchange on HyperEVM: TVL, volume, LP, open interest, markets, PAPER economics and leaderboard insights.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "nirholas",
   "type": "module",
   "engines": {
