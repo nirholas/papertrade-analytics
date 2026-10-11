@@ -1,6 +1,8 @@
 import { ago } from './../src/format.js';
 import { cards, initCharts, updateCharts } from './app/chart-set.js';
 import { watchTheme } from './app/charts.js';
+import { initConnect } from './app/connect.js';
+import { renderHero } from './app/hero.js';
 import { renderKpis } from './app/kpis.js';
 import { renderMarkets, setCalcField } from './app/markets.js';
 import { initPaper, paperCard, renderPaper } from './app/paper.js';
@@ -9,6 +11,7 @@ import { renderTraders } from './app/traders.js';
 import { $ } from './app/util.js';
 
 const kpis = $('#kpis');
+const heroLive = $('#hero-live');
 const marketCards = $('#market-cards');
 const paperPanel = $('#paper-panel');
 const traderPanel = $('#trader-panel');
@@ -58,6 +61,7 @@ function tick(): void {
 
 function paint(name?: SourceName): void {
   if (!name || name === 'metrics') {
+    renderHero(heroLive);
     renderKpis(kpis);
     renderMarkets(marketCards);
     renderPaper(paperPanel);
@@ -152,6 +156,7 @@ watchTheme(() => {
   return curve ? [...all, curve] : all;
 });
 
+initConnect();
 initCharts($('#chart-grid'));
 initPaper(paperPanel);
 syncControls();

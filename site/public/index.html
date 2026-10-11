@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Papertrade Analytics: live TVL, volume, open interest and PAPER economics</title>
-  <meta name="description" content="Unofficial live analytics for Papertrade, the 1000x synthetic perps exchange on HyperEVM: TVL, volume, LP equity, open interest, market skew, PAPER mint curve, staking and leaderboard insights, with CSV export and a JSON API.">
+  <meta name="description" content="Unofficial live analytics for Papertrade, the 1000x synthetic perps exchange on HyperEVM: TVL, volume, open interest, market skew, PAPER economics and leaderboard insights. Free JSON API and a keyless MCP server for Claude, Codex, ChatGPT, Gemini and Cursor.">
   <link rel="canonical" href="https://papertrade-analytics.pages.dev/">
   <meta property="og:title" content="Papertrade Analytics">
   <meta property="og:description" content="Live TVL, volume, open interest, market skew, PAPER economics and leaderboard insights for Papertrade perps on HyperEVM.">
@@ -14,11 +14,15 @@
   <meta name="color-scheme" content="light dark">
   <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
   <link rel="alternate" type="application/json" href="/openapi.json" title="OpenAPI">
+  <link rel="service-desc" type="application/json" href="/openapi.json">
+  <link rel="api-catalog" type="application/linkset+json" href="/.well-known/api-catalog">
+  <link rel="mcp" type="application/json" href="/.well-known/mcp/server-card.json" title="MCP server card">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23c2410c'/%3E%3Cpath d='M7 24V15m6 9V9m6 15v-7m6 7V12' stroke='%23fff7ec' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"Papertrade Analytics","description":"Unofficial live protocol analytics dashboard and JSON API for Papertrade perps on HyperEVM.","url":"https://papertrade-analytics.pages.dev/","applicationCategory":"FinanceApplication","operatingSystem":"Any","license":"https://www.apache.org/licenses/LICENSE-2.0","codeRepository":"https://github.com/nirholas/papertrade-analytics","author":{"@type":"Person","name":"nirholas"}}
   </script>
+  <script src="/embed.js"></script>
   <script type="module" src="/app.js"></script>
 </head>
 <body>
@@ -36,8 +40,11 @@
         <a href="#markets">Markets</a>
         <a href="#paper">PAPER</a>
         <a href="#traders">Traders</a>
-        <a href="#api">API</a>
+        <a href="#connect">Connect AI</a>
+        <a href="/docs/">Docs</a>
       </nav>
+      <a class="btn small os-link" href="https://papertrade-os.pages.dev/?open=analytics" rel="noopener">Open in Papertrade OS <span aria-hidden="true">&#8599;</span></a>
+      <a class="btn small full-link" href="/" target="_blank" rel="noopener">Open full site <span aria-hidden="true">&#8599;</span></a>
     </div>
     <div class="controls" role="group" aria-label="Dashboard controls">
       <div class="seg" id="range" role="radiogroup" aria-label="Chart range">
@@ -65,11 +72,37 @@
   </header>
 
   <main id="main">
-    <section class="hero" id="overview" aria-labelledby="overview-h">
-      <p class="eyebrow">HyperEVM chain 999 &middot; 1000x synthetic perps</p>
-      <h1 id="overview-h">Papertrade, measured live.</h1>
-      <p class="lede">TVL, volume, open interest, market skew, the PAPER mint curve and who is winning, read straight from the public protocol APIs and the chain. Every chart exports to CSV. Every number is in the <a href="#api">JSON API</a>.</p>
-      <div id="notice" class="notice" role="alert" hidden></div>
+    <section class="hero marketing" id="overview" aria-labelledby="overview-h">
+      <div class="hero-copy">
+        <p class="eyebrow">HyperEVM chain 999 &middot; 1000x synthetic perps</p>
+        <h1 id="overview-h">Papertrade, measured live.</h1>
+        <p class="lede">TVL, volume, open interest, market skew, the PAPER mint curve and who is winning, read straight from the public protocol APIs and the chain. Every chart exports to CSV. Every number is in the <a href="#api">JSON API</a> and one click from your AI assistant.</p>
+        <div class="cta">
+          <a class="btn primary" href="#connect">Connect your AI</a>
+          <a class="btn" href="/docs/">Read the docs</a>
+          <a class="btn os-link" href="https://papertrade-os.pages.dev/?open=analytics" rel="noopener">Open in Papertrade OS <span aria-hidden="true">&#8599;</span></a>
+        </div>
+      </div>
+      <div id="hero-live" class="hero-live" aria-busy="true" aria-label="Live protocol numbers"></div>
+    </section>
+
+    <div id="notice" class="notice" role="alert" hidden></div>
+
+    <section class="clients marketing" aria-labelledby="clients-h">
+      <h2 id="clients-h" class="clients-title">Works with the AI tools you already use</h2>
+      <ul class="client-list">
+        <li><a href="/docs/connect#claude-code">Claude</a></li>
+        <li><a href="/docs/connect#openai-codex-cli-and-ide-extension">Codex</a></li>
+        <li><a href="/docs/connect#chatgpt">ChatGPT</a></li>
+        <li><a href="/docs/connect#gemini-cli">Gemini</a></li>
+        <li><a href="/docs/connect#cursor">Cursor</a></li>
+        <li><a href="/docs/connect#vs-code-github-copilot-agent-mode">VS Code</a></li>
+        <li><a href="/docs/connect#windsurf">Windsurf</a></li>
+        <li><a href="/docs/connect#zed">Zed</a></li>
+        <li><a href="/docs/connect#cline">Cline</a></li>
+        <li><a href="/docs/connect#goose">Goose</a></li>
+        <li><a href="/docs/connect#continue">Continue</a></li>
+      </ul>
     </section>
 
     <section aria-labelledby="kpi-h">
@@ -109,31 +142,154 @@
       <div id="trader-panel" class="trader-panel" aria-busy="true"></div>
     </section>
 
-    <section id="api" aria-labelledby="api-h">
+    <section id="features" class="marketing" aria-labelledby="features-h">
       <div class="section-head">
-        <h2 id="api-h">JSON API</h2>
+        <h2 id="features-h">Built for people and for agents</h2>
+        <p class="hint">One data layer, three ways in: the dashboard, a plain JSON API and a read-only MCP server.</p>
       </div>
-      <div class="api-card">
-        <p>Everything on this page is one request away. No key, CORS open, cached 30 seconds at the edge.</p>
-        <pre class="code" tabindex="0"><code>curl https://papertrade-analytics.pages.dev/api/metrics</code></pre>
-        <p class="api-links"><a href="/api/metrics">/api/metrics</a> <a href="/api/snapshots">/api/snapshots</a> <a href="/openapi.json">/openapi.json</a> <a href="/llms.txt">/llms.txt</a></p>
+      <ul class="features">
+        <li class="feature"><h3>Live protocol numbers</h3><p>TVL, margin, LP equity, volume, open positions and traders with 24h and 7d changes, always labelled when history is too short to claim a window.</p></li>
+        <li class="feature"><h3>Charts you can export</h3><p>Six time series with range, market and scale controls and per-chart CSV. Volume is split by market; cumulative counters are never passed off as flows.</p></li>
+        <li class="feature"><h3>Skew, caps and a simulator</h3><p>See which side the house is carrying, how close each market is to its cap, and what a win keeps at your leverage, computed with the SDK's own settlement math.</p></li>
+        <li class="feature"><h3>PAPER, explained</h3><p>Supply read on-chain with an indexer fallback, the mint-rate curve with today's position marked, and how much of the supply is staked.</p></li>
+        <li class="feature"><h3>Who is winning, and how</h3><p>A sortable leaderboard plus distributions of position size, leverage and concentration. Wallets open in the explorer.</p></li>
+        <li class="feature"><h3>Agent-ready</h3><p>A keyless MCP server with <b>8 read-only tools</b>, OpenAPI 3.1, an A2A agent card, <a href="/llms.txt">llms.txt</a> and docs served as markdown. Nothing here can trade.</p></li>
+      </ul>
+    </section>
+
+    <section id="connect" class="marketing" aria-labelledby="connect-h">
+      <div class="section-head">
+        <h2 id="connect-h">Connect your AI</h2>
+        <p class="hint">One URL, no key, no sign-in: <code class="inline">https://papertrade-analytics.pages.dev/mcp</code>. Ask your assistant for the open interest skew, the PAPER mint rate or this week's top traders.</p>
+      </div>
+      <div class="connect-card">
+        <div class="tabs" role="tablist" aria-label="Choose your AI client">
+          <button type="button" role="tab" id="tab-claude-code" aria-controls="panel-claude-code" aria-selected="true" data-tab="claude-code">Claude Code</button>
+          <button type="button" role="tab" id="tab-claude-desktop" aria-controls="panel-claude-desktop" aria-selected="false" tabindex="-1" data-tab="claude-desktop">Claude Desktop</button>
+          <button type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false" tabindex="-1" data-tab="codex">Codex</button>
+          <button type="button" role="tab" id="tab-cursor" aria-controls="panel-cursor" aria-selected="false" tabindex="-1" data-tab="cursor">Cursor</button>
+          <button type="button" role="tab" id="tab-gemini" aria-controls="panel-gemini" aria-selected="false" tabindex="-1" data-tab="gemini">Gemini CLI</button>
+          <button type="button" role="tab" id="tab-vscode" aria-controls="panel-vscode" aria-selected="false" tabindex="-1" data-tab="vscode">VS Code</button>
+          <button type="button" role="tab" id="tab-chatgpt" aria-controls="panel-chatgpt" aria-selected="false" tabindex="-1" data-tab="chatgpt">ChatGPT</button>
+        </div>
+        <div role="tabpanel" id="panel-claude-code" aria-labelledby="tab-claude-code" tabindex="0">
+          <p class="hint">Run once in your terminal. Add <code class="inline">--scope user</code> to use it in every project.</p>
+          <div class="snippet"><button type="button" class="btn small copy" data-copy>Copy</button><pre class="code" tabindex="0"><code>claude mcp add --transport http papertrade-analytics https://papertrade-analytics.pages.dev/mcp</code></pre></div>
+        </div>
+        <div role="tabpanel" id="panel-claude-desktop" aria-labelledby="tab-claude-desktop" tabindex="0" hidden>
+          <p class="hint">Settings, Connectors, Add custom connector, then paste the URL above. On an older desktop build, bridge it in <code class="inline">claude_desktop_config.json</code>:</p>
+          <div class="snippet"><button type="button" class="btn small copy" data-copy>Copy</button><pre class="code" tabindex="0"><code>{
+  "mcpServers": {
+    "papertrade-analytics": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://papertrade-analytics.pages.dev/mcp"]
+    }
+  }
+}</code></pre></div>
+        </div>
+        <div role="tabpanel" id="panel-codex" aria-labelledby="tab-codex" tabindex="0" hidden>
+          <p class="hint">One command, or add the same table to <code class="inline">~/.codex/config.toml</code>.</p>
+          <div class="snippet"><button type="button" class="btn small copy" data-copy>Copy</button><pre class="code" tabindex="0"><code>codex mcp add papertrade-analytics --url https://papertrade-analytics.pages.dev/mcp</code></pre></div>
+          <div class="snippet"><button type="button" class="btn small copy" data-copy>Copy</button><pre class="code" tabindex="0"><code>[mcp_servers.papertrade-analytics]
+url = "https://papertrade-analytics.pages.dev/mcp"</code></pre></div>
+        </div>
+        <div role="tabpanel" id="panel-cursor" aria-labelledby="tab-cursor" tabindex="0" hidden>
+          <p class="hint">Add to <code class="inline">.cursor/mcp.json</code> (project) or <code class="inline">~/.cursor/mcp.json</code> (all projects).</p>
+          <div class="snippet"><button type="button" class="btn small copy" data-copy>Copy</button><pre class="code" tabindex="0"><code>{
+  "mcpServers": {
+    "papertrade-analytics": {
+      "url": "https://papertrade-analytics.pages.dev/mcp"
+    }
+  }
+}</code></pre></div>
+        </div>
+        <div role="tabpanel" id="panel-gemini" aria-labelledby="tab-gemini" tabindex="0" hidden>
+          <p class="hint">Run once in your terminal.</p>
+          <div class="snippet"><button type="button" class="btn small copy" data-copy>Copy</button><pre class="code" tabindex="0"><code>gemini mcp add --transport http papertrade-analytics https://papertrade-analytics.pages.dev/mcp</code></pre></div>
+        </div>
+        <div role="tabpanel" id="panel-vscode" aria-labelledby="tab-vscode" tabindex="0" hidden>
+          <p class="hint">Add to <code class="inline">.vscode/mcp.json</code> for Copilot agent mode.</p>
+          <div class="snippet"><button type="button" class="btn small copy" data-copy>Copy</button><pre class="code" tabindex="0"><code>{
+  "servers": {
+    "papertrade-analytics": {
+      "type": "http",
+      "url": "https://papertrade-analytics.pages.dev/mcp"
+    }
+  }
+}</code></pre></div>
+        </div>
+        <div role="tabpanel" id="panel-chatgpt" aria-labelledby="tab-chatgpt" tabindex="0" hidden>
+          <p class="hint">Settings, Apps, Advanced settings: turn on Developer mode, then Create app. Paste the URL below, choose No authentication, and enable the app from the plus menu in a new chat.</p>
+          <div class="snippet"><button type="button" class="btn small copy" data-copy>Copy</button><pre class="code" tabindex="0"><code>https://papertrade-analytics.pages.dev/mcp</code></pre></div>
+        </div>
+        <p class="connect-more">Also Windsurf, Zed, Cline, Goose, Continue, the Claude and OpenAI APIs and any OpenAPI-based framework: <a href="/docs/connect">all connection guides</a>.</p>
+      </div>
+    </section>
+
+    <section id="api" class="marketing" aria-labelledby="api-h">
+      <div class="section-head">
+        <h2 id="api-h">Quickstart and JSON API</h2>
+        <p class="hint">No key, CORS open, cached 30 seconds at the edge.</p>
+      </div>
+      <div class="api-grid">
+        <div class="api-card">
+          <h3>Ask the MCP server</h3>
+          <p class="hint">Call a tool directly, no client needed.</p>
+          <div class="snippet"><button type="button" class="btn small copy" data-copy>Copy</button><pre class="code" tabindex="0"><code>curl -s https://papertrade-analytics.pages.dev/mcp \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_protocol_snapshot","arguments":{}}}'</code></pre></div>
+        </div>
+        <div class="api-card">
+          <h3>Read the REST API</h3>
+          <p class="hint">Everything on this page is one request away.</p>
+          <div class="snippet"><button type="button" class="btn small copy" data-copy>Copy</button><pre class="code" tabindex="0"><code>curl https://papertrade-analytics.pages.dev/api/metrics</code></pre></div>
+          <p class="api-links"><a href="/api/metrics">/api/metrics</a> <a href="/api/snapshots">/api/snapshots</a> <a href="/openapi.json">/openapi.json</a></p>
+        </div>
       </div>
     </section>
   </main>
 
-  <footer class="foot">
-    <p class="foot-line">Open source (Apache-2.0). Data from the public Papertrade API, Hyperliquid candles and HyperEVM. <a href="https://github.com/nirholas/papertrade-analytics">GitHub</a></p>
-    <nav aria-label="Related projects" class="siblings">
-      <a href="https://github.com/nirholas/papertrade-sdk">papertrade-sdk</a>
-      <a href="https://github.com/nirholas/papertrade-ai">papertrade-ai</a>
-      <a href="https://papertrade-terminal.pages.dev">terminal</a>
-      <a href="https://papertrade-explorer.pages.dev">explorer</a>
-      <a href="https://papertrade-x402.pages.dev">x402</a>
-      <a href="https://papertrade-liquidations.pages.dev">liquidations</a>
-      <a href="https://papertrade-yield.pages.dev">yield</a>
-      <a href="https://github.com/nirholas/papertrade-alerts">alerts</a>
-      <a href="https://papertrade-copytrade.pages.dev">copytrade</a>
-    </nav>
+  <footer class="foot marketing">
+    <div class="foot-cols">
+      <nav aria-label="Product">
+        <h2>Product</h2>
+        <a href="#overview">Dashboard</a>
+        <a href="/docs/">Docs</a>
+        <a href="/docs/connect">Connect your AI</a>
+        <a href="/docs/api">API reference</a>
+        <a href="/docs/changelog">Changelog</a>
+      </nav>
+      <nav aria-label="For agents">
+        <h2>For agents</h2>
+        <a href="/mcp">MCP endpoint</a>
+        <a href="/llms.txt">llms.txt</a>
+        <a href="/llms-full.txt">llms-full.txt</a>
+        <a href="/openapi.json">OpenAPI</a>
+        <a href="/.well-known/mcp/server-card.json">MCP server card</a>
+        <a href="/.well-known/agent-card.json">Agent card</a>
+      </nav>
+      <nav aria-label="Project">
+        <h2>Project</h2>
+        <a href="https://github.com/nirholas/papertrade-analytics">GitHub</a>
+        <a href="/docs/security">Security</a>
+        <a href="/docs/faq">FAQ</a>
+        <a href="https://papertrade-os.pages.dev/?open=analytics" rel="noopener">Papertrade OS</a>
+      </nav>
+      <nav aria-label="Related projects" class="siblings">
+        <h2>Related</h2>
+        <a href="https://github.com/nirholas/papertrade-sdk">papertrade-sdk</a>
+        <a href="https://github.com/nirholas/papertrade-ai">papertrade-ai</a>
+        <a href="https://papertrade-terminal.pages.dev">terminal</a>
+        <a href="https://papertrade-explorer.pages.dev">explorer</a>
+        <a href="https://papertrade-x402.pages.dev">x402</a>
+        <a href="https://papertrade-liquidations.pages.dev">liquidations</a>
+        <a href="https://papertrade-yield.pages.dev">yield</a>
+        <a href="https://github.com/nirholas/papertrade-alerts">alerts</a>
+        <a href="https://papertrade-copytrade.pages.dev">copytrade</a>
+      </nav>
+    </div>
+    <p class="foot-line">Open source (Apache-2.0). Data from the public Papertrade API, Hyperliquid candles and HyperEVM. Unofficial, not affiliated with Papertrade.</p>
   </footer>
 
   <div class="disclaimer" role="note"><strong>Unofficial</strong>, not affiliated with Papertrade. High leverage can lose your whole margin.</div>
