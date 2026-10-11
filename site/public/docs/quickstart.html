@@ -48,7 +48,6 @@
 <p>Then ask: &quot;What is Papertrade&#39;s TVL and how has daily volume trended over the last two weeks?&quot;</p>
 <h2 id="3-run-it-locally">3. Run it locally<a class="anchor" href="#3-run-it-locally" aria-label="Link to this section">#</a></h2>
 <div class="code-block"><button type="button" class="copy" aria-label="Copy code">Copy</button><pre tabindex="0"><code class="language-bash">git clone https://github.com/nirholas/papertrade-analytics &amp;&amp; cd papertrade-analytics
-npm install ../papertrade-sdk-0.1.0.tgz viem   # the SDK is not on npm yet
 npm install
 npm run dev:site        # builds the app and docs, serves http://localhost:8791 with a local KV</code></pre></div>
 <p><code>npm run build:site</code> bundles the browser app and renders these docs, the discovery files and <code>llms-full.txt</code> into <code>site/public/</code>. <code>npm test</code> runs the unit tests on recorded live responses; <code>npm run test:live</code> runs the same pipeline against production.</p>

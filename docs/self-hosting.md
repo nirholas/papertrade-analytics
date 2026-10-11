@@ -10,7 +10,6 @@ The whole project is one Cloudflare Pages site: static files from `site/public/`
 
 ```bash
 git clone https://github.com/nirholas/papertrade-analytics && cd papertrade-analytics
-npm install ../papertrade-sdk-0.1.0.tgz viem
 npm install
 npm run typecheck && npm test
 npm run build:site          # bundles the app, renders docs, generates discovery files and llms-full.txt

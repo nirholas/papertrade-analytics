@@ -34,7 +34,6 @@ Then ask: "What is Papertrade's TVL and how has daily volume trended over the la
 
 ```bash
 git clone https://github.com/nirholas/papertrade-analytics && cd papertrade-analytics
-npm install ../papertrade-sdk-0.1.0.tgz viem   # the SDK is not on npm yet
 npm install
 npm run dev:site        # builds the app and docs, serves http://localhost:8791 with a local KV
 ```

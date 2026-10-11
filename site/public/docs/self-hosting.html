@@ -34,7 +34,6 @@
 <h1 id="self-hosting-on-cloudflare">Self-hosting on Cloudflare</h1>
 <p>The whole project is one Cloudflare Pages site: static files from <code>site/public/</code>, Pages Functions from <code>site/functions/</code>. No database, no secrets.</p>
 <div class="code-block"><button type="button" class="copy" aria-label="Copy code">Copy</button><pre tabindex="0"><code class="language-bash">git clone https://github.com/nirholas/papertrade-analytics &amp;&amp; cd papertrade-analytics
-npm install ../papertrade-sdk-0.1.0.tgz viem
 npm install
 npm run typecheck &amp;&amp; npm test
 npm run build:site          # bundles the app, renders docs, generates discovery files and llms-full.txt
