@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Papertrade Analytics: live TVL, volume, open interest and PAPER economics</title>
+  <meta name="description" content="Unofficial live analytics for Papertrade, the 1000x synthetic perps exchange on HyperEVM: TVL, volume, LP equity, open interest, market skew, PAPER mint curve, staking and leaderboard insights, with CSV export and a JSON API.">
+  <link rel="canonical" href="https://papertrade-analytics.pages.dev/">
+  <meta property="og:title" content="Papertrade Analytics">
+  <meta property="og:description" content="Live TVL, volume, open interest, market skew, PAPER economics and leaderboard insights for Papertrade perps on HyperEVM.">
+  <meta property="og:url" content="https://papertrade-analytics.pages.dev/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="color-scheme" content="light dark">
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+  <link rel="alternate" type="application/json" href="/openapi.json" title="OpenAPI">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23c2410c'/%3E%3Cpath d='M7 24V15m6 9V9m6 15v-7m6 7V12' stroke='%23fff7ec' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Papertrade Analytics","description":"Unofficial live protocol analytics dashboard and JSON API for Papertrade perps on HyperEVM.","url":"https://papertrade-analytics.pages.dev/","applicationCategory":"FinanceApplication","operatingSystem":"Any","license":"https://opensource.org/licenses/MIT","codeRepository":"https://github.com/nirholas/papertrade-analytics","author":{"@type":"Person","name":"nirholas"}}
+  </script>
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="top">
+    <div class="top-row">
+      <a class="brand" href="/" aria-label="Papertrade Analytics, home">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="6"></rect><path d="M7 24V15m6 9V9m6 15v-7m6 7V12"></path></svg>
+        <span class="brand-name">Papertrade <b>Analytics</b></span>
+      </a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#overview">Overview</a>
+        <a href="#charts">Charts</a>
+        <a href="#markets">Markets</a>
+        <a href="#paper">PAPER</a>
+        <a href="#traders">Traders</a>
+        <a href="#api">API</a>
+      </nav>
+    </div>
+    <div class="controls" role="group" aria-label="Dashboard controls">
+      <div class="seg" id="range" role="radiogroup" aria-label="Chart range">
+        <button type="button" role="radio" data-range="1h" aria-checked="false">1h</button>
+        <button type="button" role="radio" data-range="6h" aria-checked="false">6h</button>
+        <button type="button" role="radio" data-range="24h" aria-checked="false">24h</button>
+        <button type="button" role="radio" data-range="7d" aria-checked="false">7d</button>
+        <button type="button" role="radio" data-range="all" aria-checked="false">All</button>
+      </div>
+      <div class="seg" id="market-filter" role="radiogroup" aria-label="Market filter">
+        <button type="button" role="radio" data-market="all" aria-checked="false">All markets</button>
+        <button type="button" role="radio" data-market="BTC" aria-checked="false">BTC</button>
+        <button type="button" role="radio" data-market="ETH" aria-checked="false">ETH</button>
+      </div>
+      <div class="seg" id="scale" role="radiogroup" aria-label="Price scale">
+        <button type="button" role="radio" data-scale="linear" aria-checked="false">Linear</button>
+        <button type="button" role="radio" data-scale="log" aria-checked="false">Log</button>
+      </div>
+      <div class="live">
+        <span id="updated" class="updated" role="status" aria-live="off">Loading</span>
+        <button type="button" id="refresh" class="btn small" aria-label="Refresh now">Refresh</button>
+        <button type="button" id="pause" class="btn small" aria-pressed="false">Pause</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="overview" aria-labelledby="overview-h">
+      <p class="eyebrow">HyperEVM chain 999 &middot; 1000x synthetic perps</p>
+      <h1 id="overview-h">Papertrade, measured live.</h1>
+      <p class="lede">TVL, volume, open interest, market skew, the PAPER mint curve and who is winning, read straight from the public protocol APIs and the chain. Every chart exports to CSV. Every number is in the <a href="#api">JSON API</a>.</p>
+      <div id="notice" class="notice" role="alert" hidden></div>
+    </section>
+
+    <section aria-labelledby="kpi-h">
+      <h2 id="kpi-h" class="visually-hidden">Headline numbers</h2>
+      <div id="kpis" class="kpis" aria-busy="true"></div>
+    </section>
+
+    <section id="charts" aria-labelledby="charts-h">
+      <div class="section-head">
+        <h2 id="charts-h">Time series</h2>
+        <p class="hint">Crosshair for exact values. Hover a legend swatch to read what it plots. The protocol keeps hourly history, so ranges under an hour widen to the latest few buckets.</p>
+      </div>
+      <div id="chart-grid" class="chart-grid"></div>
+    </section>
+
+    <section id="markets" aria-labelledby="markets-h">
+      <div class="section-head">
+        <h2 id="markets-h">Markets</h2>
+        <p class="hint">Mid prices are Hyperliquid candle closes. Long and short are the open notional the house is carrying.</p>
+      </div>
+      <div id="market-cards" class="market-cards" aria-busy="true"></div>
+    </section>
+
+    <section id="paper" aria-labelledby="paper-h">
+      <div class="section-head">
+        <h2 id="paper-h">PAPER economics</h2>
+        <p class="hint">PAPER is minted to losing traders and staked to earn the protocol's fees. The mint rate falls along a fixed curve as the protocol grows.</p>
+      </div>
+      <div id="paper-panel" class="paper-panel" aria-busy="true"></div>
+    </section>
+
+    <section id="traders" aria-labelledby="traders-h">
+      <div class="section-head">
+        <h2 id="traders-h">Leaderboard insights</h2>
+        <p class="hint">Top traders by windowed PnL, how they size and lever, and how concentrated open notional is. Wallets open in the explorer.</p>
+      </div>
+      <div id="trader-panel" class="trader-panel" aria-busy="true"></div>
+    </section>
+
+    <section id="api" aria-labelledby="api-h">
+      <div class="section-head">
+        <h2 id="api-h">JSON API</h2>
+      </div>
+      <div class="api-card">
+        <p>Everything on this page is one request away. No key, CORS open, cached 30 seconds at the edge.</p>
+        <pre class="code" tabindex="0"><code>curl https://papertrade-analytics.pages.dev/api/metrics</code></pre>
+        <p class="api-links"><a href="/api/metrics">/api/metrics</a> <a href="/api/snapshots">/api/snapshots</a> <a href="/openapi.json">/openapi.json</a> <a href="/llms.txt">/llms.txt</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p class="foot-line">Open source (MIT). Data from the public Papertrade API, Hyperliquid candles and HyperEVM. <a href="https://github.com/nirholas/papertrade-analytics">GitHub</a></p>
+    <nav aria-label="Related projects" class="siblings">
+      <a href="https://github.com/nirholas/papertrade-sdk">papertrade-sdk</a>
+      <a href="https://github.com/nirholas/papertrade-ai">papertrade-ai</a>
+      <a href="https://papertrade-terminal.pages.dev">terminal</a>
+      <a href="https://papertrade-explorer.pages.dev">explorer</a>
+      <a href="https://papertrade-x402.pages.dev">x402</a>
+      <a href="https://papertrade-liquidations.pages.dev">liquidations</a>
+      <a href="https://papertrade-yield.pages.dev">yield</a>
+      <a href="https://github.com/nirholas/papertrade-alerts">alerts</a>
+      <a href="https://papertrade-copytrade.pages.dev">copytrade</a>
+    </nav>
+  </footer>
+
+  <div class="disclaimer" role="note"><strong>Unofficial</strong>, not affiliated with Papertrade. High leverage can lose your whole margin.</div>
+</body>
+</html>

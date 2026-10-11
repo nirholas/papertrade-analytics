@@ -1,0 +1,19 @@
+# papertrade-analytics
+
+> Unofficial live analytics for Papertrade (papertrade.xyz), the 1000x synthetic perps exchange on HyperEVM (chain 999). Not affiliated with Papertrade. High leverage can lose your whole margin.
+
+Site: https://papertrade-analytics.pages.dev
+Source: https://github.com/nirholas/papertrade-analytics
+SDK: https://github.com/nirholas/papertrade-sdk
+
+## API (no key, CORS open, 30s edge cache)
+
+- GET /api/metrics : JSON. `protocol` (tvlUsd, marginUsd, lpUsd, reserveUsd, queueUsd, allTimeVolumeUsd, volume24hUsd, openPositions, traders, trades), `deltas` (24h and 7d changes, `partial` when history is shorter than the window), `markets[]` (BTC and ETH: priceUsd, change24hPct, change7dPct, volume24hUsd, openLongUsd, openShortUsd, longShare, cap utilization, maxLeverage, flags, impact parameters, keepsExample for a $100 500x +0.1% win), `paper` (supply, mintRate, phase, stakedShare, curve), `staking` (totalStaked, accRewardPerShareUsd, pendingRewardsUsd). All USD values are plain numbers.
+- GET /api/snapshots : recorded house-book samples (empty unless a KV namespace is bound).
+- GET /openapi.json : OpenAPI 3.1 spec.
+
+## Notes
+
+- `source.onchain=false` means the HyperEVM RPC was rate-limited and PAPER supply came from the indexer.
+- Volume, PnL, trades and users in protocol history are cumulative; deltas are computed from them.
+- Wallet pages: https://papertrade-explorer.pages.dev/#/wallet/<address>

@@ -1,0 +1,5 @@
+Contact: https://github.com/nirholas/papertrade-analytics/security/advisories/new
+Expires: 2027-10-10T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://papertrade-analytics.pages.dev/.well-known/security.txt
+Policy: https://github.com/nirholas/papertrade-analytics/blob/main/SECURITY.md

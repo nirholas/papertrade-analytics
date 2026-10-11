@@ -1,0 +1,12 @@
+name = "papertrade-analytics"
+compatibility_date = "2026-10-01"
+pages_build_output_dir = "public"
+
+[vars]
+PAPERTRADE_API_URL = "https://exchange.papertrade.xyz"
+
+# Optional snapshot recording: bind a KV namespace named SNAPSHOTS (create it once with
+# `npx wrangler kv namespace create SNAPSHOTS`, then add a kv_namespaces table with binding = "SNAPSHOTS" and
+# that id, or bind it in the Pages dashboard). The API then records the house book every five minutes so the LP
+# and open-interest charts grow past what the protocol keeps. Without it the charts use the protocol's own short
+# history and /api/snapshots returns an empty list.

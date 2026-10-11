@@ -1,0 +1,828 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Papertrade Analytics API",
+    "version": "0.1.0",
+    "description": "Unofficial JSON API behind papertrade-analytics. Aggregates the public Papertrade API, Hyperliquid candles and HyperEVM reads. Not affiliated with Papertrade. High leverage can lose your whole margin.",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://papertrade-analytics.pages.dev"
+    }
+  ],
+  "paths": {
+    "/api/metrics": {
+      "get": {
+        "operationId": "getMetrics",
+        "summary": "Headline protocol KPIs, markets and PAPER economics",
+        "description": "Cached 30 seconds at the edge. X-Cache is HIT or MISS. Values are USD unless named otherwise.",
+        "responses": {
+          "200": {
+            "description": "Metrics document.",
+            "headers": {
+              "X-Cache": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "HIT",
+                    "MISS"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metrics"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The Papertrade API was unreachable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/snapshots": {
+      "get": {
+        "operationId": "getSnapshots",
+        "summary": "Recorded house-book samples",
+        "description": "One sample every five minutes while the SNAPSHOTS KV namespace is bound; an empty list otherwise.",
+        "responses": {
+          "200": {
+            "description": "Snapshots.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "intervalMs": {
+                      "type": "number",
+                      "description": "Minimum gap between samples."
+                    },
+                    "recording": {
+                      "type": "boolean"
+                    },
+                    "snapshots": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Snapshot"
+                      }
+                    }
+                  },
+                  "required": [
+                    "intervalMs",
+                    "recording",
+                    "snapshots"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi.json": {
+      "get": {
+        "operationId": "getOpenApi",
+        "summary": "This document",
+        "responses": {
+          "200": {
+            "description": "OpenAPI 3.1 document."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Delta": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "abs": {
+            "type": "number",
+            "description": "Absolute change."
+          },
+          "pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fractional change (0.1 is +10%). Null when the base was zero."
+          },
+          "fromMs": {
+            "type": "number",
+            "description": "Unix ms of the base point."
+          },
+          "toMs": {
+            "type": "number",
+            "description": "Unix ms of the newest point."
+          },
+          "spanMs": {
+            "type": "number",
+            "description": "Time between base and newest point."
+          },
+          "partial": {
+            "type": "boolean",
+            "description": "True when the series is shorter than the requested window, so the change is measured since its earliest point."
+          }
+        },
+        "required": [
+          "abs",
+          "pct",
+          "fromMs",
+          "toMs",
+          "spanMs",
+          "partial"
+        ]
+      },
+      "DeltaPair": {
+        "type": "object",
+        "properties": {
+          "h24": {
+            "$ref": "#/components/schemas/Delta"
+          },
+          "d7": {
+            "$ref": "#/components/schemas/Delta"
+          }
+        },
+        "required": [
+          "h24",
+          "d7"
+        ],
+        "description": "Change over 24 hours and 7 days where the history reaches back that far."
+      },
+      "KeepsExample": {
+        "type": "object",
+        "properties": {
+          "marginUsd": {
+            "type": "number",
+            "description": "Margin of the worked example."
+          },
+          "leverage": {
+            "type": "number",
+            "description": "Leverage of the worked example."
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "long"
+            ]
+          },
+          "entryPriceUsd": {
+            "type": "number",
+            "description": "Entry price."
+          },
+          "exitPriceUsd": {
+            "type": "number",
+            "description": "Exit price, one raw-price tick rounding of entry plus the move."
+          },
+          "moveFraction": {
+            "type": "number",
+            "description": "Realised price move, about 0.001."
+          },
+          "rawGainUsd": {
+            "type": "number",
+            "description": "Price move times notional, before deadband, impact or fees."
+          },
+          "afterImpactUsd": {
+            "type": "number",
+            "description": "Gain after the 0.2 bps deadband and the asymmetric-impact haircut."
+          },
+          "winFeeUsd": {
+            "type": "number",
+            "description": "2% win fee."
+          },
+          "netUsd": {
+            "type": "number",
+            "description": "What the trader keeps."
+          },
+          "keptFraction": {
+            "type": "number",
+            "description": "netUsd / rawGainUsd."
+          }
+        },
+        "required": [
+          "marginUsd",
+          "leverage",
+          "side",
+          "entryPriceUsd",
+          "exitPriceUsd",
+          "moveFraction",
+          "rawGainUsd",
+          "afterImpactUsd",
+          "winFeeUsd",
+          "netUsd",
+          "keptFraction"
+        ],
+        "description": "Result of papertrade-sdk estimateClose for a $100, 500x long that wins +0.1%."
+      },
+      "Market": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Instrument id (0 BTC, 1 ETH)."
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "priceUsd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Latest Hyperliquid 1h close."
+          },
+          "change24hPct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fractional 24h change."
+          },
+          "change7dPct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fractional 7d change."
+          },
+          "sparkline": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "Up to 168 hourly closes, newest last."
+          },
+          "volume24hUsd": {
+            "type": "number",
+            "description": "24h volume from /query/protocol/market-stats."
+          },
+          "openLongUsd": {
+            "type": "number",
+            "description": "Open long notional (house book)."
+          },
+          "openShortUsd": {
+            "type": "number",
+            "description": "Open short notional (house book)."
+          },
+          "longShare": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Long share of open notional, 0..1."
+          },
+          "capOiLongUsd": {
+            "type": "number",
+            "description": "Long open interest counted against the cap, in USD at the mark (stored on chain as a base-asset quantity)."
+          },
+          "capOiShortUsd": {
+            "type": "number",
+            "description": "Short open interest counted against the cap, in USD at the mark."
+          },
+          "longCapUsd": {
+            "type": "number",
+            "description": "Long open-interest cap, in USD at the mark."
+          },
+          "shortCapUsd": {
+            "type": "number",
+            "description": "Short open-interest cap, in USD at the mark."
+          },
+          "longCapUtilization": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "capOiLongUsd / longCapUsd."
+          },
+          "shortCapUtilization": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "capOiShortUsd / shortCapUsd."
+          },
+          "maxLeverage": {
+            "type": "number",
+            "description": "Maximum leverage."
+          },
+          "maxPositionUsd": {
+            "type": "number",
+            "description": "Maximum position notional."
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "paused": {
+            "type": "boolean"
+          },
+          "closeOnly": {
+            "type": "boolean"
+          },
+          "terminal": {
+            "type": "boolean"
+          },
+          "retired": {
+            "type": "boolean"
+          },
+          "openable": {
+            "type": "boolean",
+            "description": "active and not paused."
+          },
+          "impact": {
+            "type": "object",
+            "properties": {
+              "baseRate": {
+                "type": "number",
+                "description": "Base haircut rate on wins."
+              },
+              "rateMultiplier": {
+                "type": "number",
+                "description": "Rate multiplier."
+              },
+              "positionMultiplier": {
+                "type": "number",
+                "description": "Position multiplier."
+              },
+              "referenceNotionalUsd": {
+                "type": "number",
+                "description": "Reference notional."
+              },
+              "bustBufferBps": {
+                "type": "number",
+                "description": "Liquidation buffer in basis points."
+              }
+            },
+            "required": [
+              "baseRate",
+              "rateMultiplier",
+              "positionMultiplier",
+              "referenceNotionalUsd",
+              "bustBufferBps"
+            ]
+          },
+          "keepsExample": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KeepsExample"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "symbol",
+          "priceUsd",
+          "change24hPct",
+          "change7dPct",
+          "sparkline",
+          "volume24hUsd",
+          "openLongUsd",
+          "openShortUsd",
+          "longShare",
+          "capOiLongUsd",
+          "capOiShortUsd",
+          "longCapUsd",
+          "shortCapUsd",
+          "longCapUtilization",
+          "shortCapUtilization",
+          "maxLeverage",
+          "maxPositionUsd",
+          "active",
+          "paused",
+          "closeOnly",
+          "terminal",
+          "retired",
+          "openable",
+          "impact",
+          "keepsExample"
+        ]
+      },
+      "Metrics": {
+        "type": "object",
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "protocolBlock": {
+                "type": "string"
+              },
+              "protocolAt": {
+                "type": "number",
+                "description": "Unix ms of the protocol summary."
+              },
+              "historyAsOf": {
+                "type": "number",
+                "description": "Unix ms the history was computed."
+              },
+              "onchain": {
+                "type": "boolean",
+                "description": "False when every HyperEVM RPC refused the read and PAPER figures came from the indexer."
+              },
+              "snapshots": {
+                "type": "number",
+                "description": "Recorded house-book samples available."
+              }
+            },
+            "required": [
+              "protocolBlock",
+              "protocolAt",
+              "historyAsOf",
+              "onchain",
+              "snapshots"
+            ]
+          },
+          "protocol": {
+            "type": "object",
+            "properties": {
+              "tvlUsd": {
+                "type": "number",
+                "description": "Total value locked."
+              },
+              "marginUsd": {
+                "type": "number",
+                "description": "Trader margin."
+              },
+              "lpUsd": {
+                "type": "number",
+                "description": "LP equity."
+              },
+              "reserveUsd": {
+                "type": "number",
+                "description": "Reserve."
+              },
+              "queueUsd": {
+                "type": "number",
+                "description": "Withdrawal queue."
+              },
+              "allTimeVolumeUsd": {
+                "type": "number",
+                "description": "All-time volume."
+              },
+              "volume24hUsd": {
+                "type": "number",
+                "description": "Sum of per-market 24h volume."
+              },
+              "openPositions": {
+                "type": "number",
+                "description": "Open positions."
+              },
+              "traders": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Cumulative unique traders."
+              },
+              "trades": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Cumulative trades."
+              },
+              "liquidatedVolumeUsd": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Cumulative liquidated volume."
+              },
+              "traderPnlUsd": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Cumulative trader PnL."
+              },
+              "lifetimeFeesUsd": {
+                "type": "number",
+                "description": "Lifetime fees."
+              },
+              "pendingFeesUsd": {
+                "type": "number",
+                "description": "Fees pending distribution."
+              },
+              "openNotionalUsd": {
+                "type": "number",
+                "description": "Open notional across markets."
+              },
+              "houseOpenPnlUsd": {
+                "type": "number",
+                "description": "House open PnL."
+              }
+            },
+            "required": [
+              "tvlUsd",
+              "marginUsd",
+              "lpUsd",
+              "reserveUsd",
+              "queueUsd",
+              "allTimeVolumeUsd",
+              "volume24hUsd",
+              "openPositions",
+              "traders",
+              "trades",
+              "liquidatedVolumeUsd",
+              "traderPnlUsd",
+              "lifetimeFeesUsd",
+              "pendingFeesUsd",
+              "openNotionalUsd",
+              "houseOpenPnlUsd"
+            ]
+          },
+          "deltas": {
+            "type": "object",
+            "properties": {
+              "tvl": {
+                "$ref": "#/components/schemas/DeltaPair"
+              },
+              "lp": {
+                "$ref": "#/components/schemas/DeltaPair"
+              },
+              "traders": {
+                "$ref": "#/components/schemas/DeltaPair"
+              },
+              "openPositions": {
+                "$ref": "#/components/schemas/DeltaPair"
+              },
+              "volume24h": {
+                "$ref": "#/components/schemas/Delta"
+              },
+              "trades24h": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Trades in the last 24h."
+              }
+            },
+            "required": [
+              "tvl",
+              "lp",
+              "traders",
+              "openPositions",
+              "volume24h",
+              "trades24h"
+            ]
+          },
+          "markets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Market"
+            }
+          },
+          "paper": {
+            "type": "object",
+            "properties": {
+              "supply": {
+                "type": "number",
+                "description": "PAPER supply."
+              },
+              "supplySource": {
+                "type": "string",
+                "enum": [
+                  "onchain",
+                  "indexer"
+                ]
+              },
+              "staked": {
+                "type": "number",
+                "description": "PAPER staked."
+              },
+              "stakedSource": {
+                "type": "string",
+                "enum": [
+                  "onchain",
+                  "indexer"
+                ]
+              },
+              "stakedShare": {
+                "type": "number",
+                "description": "staked / supply."
+              },
+              "mintRate": {
+                "type": "number",
+                "description": "Current marginal PAPER minted per $1 of loss basis, from papertrade-sdk paperMintRate."
+              },
+              "mintRateMax": {
+                "type": "number",
+                "description": "Curve maximum (the indexer's rate field)."
+              },
+              "phase": {
+                "type": "string",
+                "enum": [
+                  "flat",
+                  "decay"
+                ]
+              },
+              "trackedLpUsd": {
+                "type": "number",
+                "description": "Tracked LP."
+              },
+              "tailProgressUsd": {
+                "type": "number",
+                "description": "Never-decreasing tail high-water mark."
+              },
+              "curve": {
+                "type": "object",
+                "properties": {
+                  "flatRate": {
+                    "type": "number",
+                    "description": "Rate while flat."
+                  },
+                  "lpFlatThresholdUsd": {
+                    "type": "number",
+                    "description": "Tracked LP below which the rate is flat."
+                  },
+                  "tailDecayScaleUsd": {
+                    "type": "number",
+                    "description": "Decay scale S."
+                  }
+                },
+                "required": [
+                  "flatRate",
+                  "lpFlatThresholdUsd",
+                  "tailDecayScaleUsd"
+                ]
+              },
+              "tailProgressToRate25Usd": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Tail progress still needed to reach 25 PAPER per $1."
+              },
+              "reservePaper": {
+                "type": "number",
+                "description": "PAPER reserve."
+              }
+            },
+            "required": [
+              "supply",
+              "supplySource",
+              "staked",
+              "stakedSource",
+              "stakedShare",
+              "mintRate",
+              "mintRateMax",
+              "phase",
+              "trackedLpUsd",
+              "tailProgressUsd",
+              "curve",
+              "tailProgressToRate25Usd",
+              "reservePaper"
+            ]
+          },
+          "staking": {
+            "type": "object",
+            "properties": {
+              "totalStaked": {
+                "type": "number",
+                "description": "Total PAPER staked."
+              },
+              "accRewardPerShareUsd": {
+                "type": "number",
+                "description": "accRewardPerShare / 1e27."
+              },
+              "accRewardPerShareRaw": {
+                "type": "string",
+                "description": "Raw 1e27-scaled accumulator."
+              },
+              "pendingRewardsUsd": {
+                "type": "number",
+                "description": "Pending rewards."
+              },
+              "rewardCapUsd": {
+                "type": "number",
+                "description": "Reward cap."
+              },
+              "overflowAboveCapUsd": {
+                "type": "number",
+                "description": "Amount above the cap."
+              },
+              "rewardsDistributedUsd": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Cumulative rewards distributed."
+              }
+            },
+            "required": [
+              "totalStaked",
+              "accRewardPerShareUsd",
+              "accRewardPerShareRaw",
+              "pendingRewardsUsd",
+              "rewardCapUsd",
+              "overflowAboveCapUsd",
+              "rewardsDistributedUsd"
+            ]
+          }
+        },
+        "required": [
+          "generatedAt",
+          "source",
+          "protocol",
+          "deltas",
+          "markets",
+          "paper",
+          "staking"
+        ]
+      },
+      "Snapshot": {
+        "type": "object",
+        "properties": {
+          "t": {
+            "type": "number",
+            "description": "Unix ms."
+          },
+          "tvl": {
+            "type": "number",
+            "description": "TVL."
+          },
+          "margin": {
+            "type": "number",
+            "description": "Margin."
+          },
+          "lp": {
+            "type": "number",
+            "description": "LP equity."
+          },
+          "pnl": {
+            "type": "number",
+            "description": "House open PnL."
+          },
+          "open": {
+            "type": "number",
+            "description": "Open positions."
+          },
+          "btcLong": {
+            "type": "number",
+            "description": "BTC long notional."
+          },
+          "btcShort": {
+            "type": "number",
+            "description": "BTC short notional."
+          },
+          "ethLong": {
+            "type": "number",
+            "description": "ETH long notional."
+          },
+          "ethShort": {
+            "type": "number",
+            "description": "ETH short notional."
+          }
+        },
+        "required": [
+          "t",
+          "tvl",
+          "margin",
+          "lp",
+          "pnl",
+          "open",
+          "btcLong",
+          "btcShort",
+          "ethLong",
+          "ethShort"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/papertrade/
+
+Sitemap: https://papertrade-analytics.pages.dev/sitemap.xml

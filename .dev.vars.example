@@ -1,0 +1,3 @@
+# Copy to .dev.vars for local `wrangler pages dev`. Nothing here is a secret and every value is optional.
+# Override the Papertrade API origin (default https://exchange.papertrade.xyz).
+PAPERTRADE_API_URL=https://exchange.papertrade.xyz
