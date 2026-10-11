@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Self-hosting on Cloudflare | Papertrade Analytics docs</title>
+<meta name="description" content="Deploy your own copy of Papertrade Analytics, the API and the MCP server to Cloudflare Pages, with optional KV snapshots.">
+<link rel="canonical" href="https://papertrade-analytics.pages.dev/docs/self-hosting">
+<link rel="alternate" type="text/markdown" href="https://papertrade-analytics.pages.dev/docs/self-hosting.md">
+<link rel="alternate" type="text/plain" href="https://papertrade-analytics.pages.dev/llms.txt" title="llms.txt">
+<meta property="og:title" content="Self-hosting on Cloudflare | Papertrade Analytics docs">
+<meta property="og:description" content="Deploy your own copy of Papertrade Analytics, the API and the MCP server to Cloudflare Pages, with optional KV snapshots.">
+<meta property="og:url" content="https://papertrade-analytics.pages.dev/docs/self-hosting">
+<meta property="og:type" content="article">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23c2410c'/%3E%3Cpath d='M7 24V15m6 9V9m6 15v-7m6 7V12' stroke='%23fff7ec' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/docs/docs.css">
+<script src="/docs/docs.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Self-hosting on Cloudflare","description":"Deploy your own copy of Papertrade Analytics, the API and the MCP server to Cloudflare Pages, with optional KV snapshots.","url":"https://papertrade-analytics.pages.dev/docs/self-hosting","inLanguage":"en","license":"https://www.apache.org/licenses/LICENSE-2.0","isPartOf":{"@type":"WebSite","name":"Papertrade Analytics","url":"https://papertrade-analytics.pages.dev"}}</script>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<header class="bar">
+  <button type="button" class="icon menu" id="menu" aria-label="Open navigation" aria-expanded="false" aria-controls="side"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <a class="brand" href="/docs/" aria-label="Papertrade Analytics docs, home"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="6"/><path d="M7 24V15m6 9V9m6 15v-7m6 7V12"/></svg><span>Papertrade <b>Analytics</b> <em>docs</em></span></a>
+  <button type="button" class="search-open" id="search-open" aria-label="Search the docs" aria-keyshortcuts="/"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search</span><kbd>/</kbd></button>
+  <nav class="links" aria-label="Site"><a href="/">Dashboard</a><a href="https://github.com/nirholas/papertrade-analytics">GitHub</a><a href="/llms.txt">llms.txt</a><a href="/mcp">MCP</a></nav>
+  <button type="button" class="icon" id="theme" aria-label="Toggle dark and light theme"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-.9-.1-1.3A5.5 5.5 0 0 1 13.3 3.1 9 9 0 0 0 12 3z"/></svg></button>
+</header>
+<div class="shell">
+  <aside class="side" id="side" aria-label="Documentation"><nav><ul><li><a href="/docs/">Overview</a></li><li><a href="/docs/quickstart">Quickstart</a></li><li><a href="/docs/concepts">Concepts</a></li><li><a href="/docs/api">API reference</a></li><li><a href="/docs/mcp">MCP server</a></li><li><a href="/docs/connect">Connect your AI</a></li><li><a href="/docs/discovery">Agent discovery</a></li><li><a href="/docs/self-hosting" aria-current="page">Self-hosting on Cloudflare</a></li><li><a href="/docs/security">Security and limits</a></li><li><a href="/docs/faq">FAQ</a></li><li><a href="/docs/changelog">Changelog</a></li></ul></nav><p class="side-note"><a href="/docs/self-hosting.md">View as markdown</a></p></aside>
+  <main id="content" class="doc">
+    <article>
+<h1 id="self-hosting-on-cloudflare">Self-hosting on Cloudflare</h1>
+<p>The whole project is one Cloudflare Pages site: static files from <code>site/public/</code>, Pages Functions from <code>site/functions/</code>. No database, no secrets.</p>
+<div class="code-block"><button type="button" class="copy" aria-label="Copy code">Copy</button><pre tabindex="0"><code class="language-bash">git clone https://github.com/nirholas/papertrade-analytics &amp;&amp; cd papertrade-analytics
+npm install ../papertrade-sdk-0.1.0.tgz viem
+npm install
+npm run typecheck &amp;&amp; npm test
+npm run build:site          # bundles the app, renders docs, generates discovery files and llms-full.txt
+cd site
+npx wrangler pages deploy --project-name &lt;your-project&gt; --branch main</code></pre></div>
+<p>Authenticate wrangler with <code>npx wrangler login</code>, or export <code>CLOUDFLARE_API_TOKEN</code> (Pages: Edit) and <code>CLOUDFLARE_ACCOUNT_ID</code>. Run wrangler from <code>site/</code>.</p>
+<h2 id="configuration">Configuration<a class="anchor" href="#configuration" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>Name</th><th>Where</th><th>Purpose</th></tr></thead><tbody><tr><td><code>PAPERTRADE_API_URL</code></td><td><code>site/wrangler.toml</code> <code>[vars]</code></td><td>Upstream API origin. Default <code>https://exchange.papertrade.xyz</code>.</td></tr><tr><td><code>SNAPSHOTS</code></td><td>KV binding</td><td>Optional. Records the house book every five minutes so LP and open-interest charts grow past what the protocol keeps.</td></tr><tr><td><code>SITE_URL</code></td><td>environment at build time</td><td>Optional. Public origin written into the docs, cards and sitemap. Default <code>https://papertrade-analytics.pages.dev</code>.</td></tr></tbody></table></div>
+<p>For snapshots: <code>npx wrangler kv namespace create SNAPSHOTS</code>, then bind it as <code>SNAPSHOTS</code> in the Pages project settings.</p>
+<h2 id="custom-domain">Custom domain<a class="anchor" href="#custom-domain" aria-label="Link to this section">#</a></h2>
+<p>Set <code>SITE_URL=https://your.domain npm run build:site</code> before deploying so canonical URLs, the server card, <code>server.json</code> links and the sitemap point at your domain. Add the domain in the Pages dashboard.</p>
+<h2 id="local-development">Local development<a class="anchor" href="#local-development" aria-label="Link to this section">#</a></h2>
+<p><code>npm run dev:site</code> serves everything, including <code>/mcp</code>, on <code>http://localhost:8791</code> with a local KV. Point <code>npx @modelcontextprotocol/inspector --cli http://localhost:8791/mcp --transport http --method tools/list</code> at it. Kill the dev server by PID.</p>
+<h2 id="embedding">Embedding<a class="anchor" href="#embedding" aria-label="Link to this section">#</a></h2>
+<p><code>_headers</code> allows framing only by <code>https://papertrade-os.pages.dev</code> and other <code>https://*.pages.dev</code> hosts. To embed from your own origin, edit the <code>frame-ancestors</code> directive on the <code>/</code> route in <code>site/public/_headers</code>.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages"><a class="prev" href="/docs/discovery"><span>Previous</span>Agent discovery</a><a class="next" href="/docs/security"><span>Next</span>Security and limits</a></nav>
+    <footer class="doc-foot"><p>Unofficial, not affiliated with Papertrade. High leverage can lose your whole margin. Not financial advice. <a href="https://github.com/nirholas/papertrade-analytics/edit/main/docs/self-hosting.md">Edit this page</a>.</p></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><h2>On this page</h2><ul><li class="d2"><a href="#configuration">Configuration</a></li><li class="d2"><a href="#custom-domain">Custom domain</a></li><li class="d2"><a href="#local-development">Local development</a></li><li class="d2"><a href="#embedding">Embedding</a></li></ul></nav>
+</div>
+<div class="search" id="search" role="dialog" aria-modal="true" aria-label="Search the docs" hidden>
+  <div class="search-box">
+    <input id="search-input" type="search" placeholder="Search the docs" autocomplete="off" spellcheck="false" aria-label="Search query" aria-controls="search-results">
+    <ul id="search-results" role="listbox" aria-label="Results"></ul>
+    <p class="search-hint" id="search-hint">Type to search. Enter opens the first result, Esc closes.</p>
+  </div>
+</div>
+</body>
+</html>

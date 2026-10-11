@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 - 2026-10-11
+
+- Read-only MCP server at `/mcp` (Streamable HTTP, stateless) with eight tools: `get_protocol_snapshot`, `get_history`, `get_open_interest`, `get_paper_economics`, `get_market_stats`, `get_top_traders`, `get_position_insights` and the simulation-only `quote_position_outcome`.
+- Docs site at `/docs/` with search, per-page markdown twins, a Connect your AI guide for Claude, Codex, ChatGPT, Gemini, Cursor, VS Code, Windsurf, Zed, Cline, Goose and Continue, and a generated `llms-full.txt`.
+- Agent discovery: MCP server card, A2A agent card, RFC 9727 API catalog, richer `robots.txt`, `Link` headers, `server.json` for the MCP registry.
+- `?embed=1` mode, an "Open in Papertrade OS" link, and framing allowed for Papertrade OS.
+- `/api/metrics` and the MCP tools share one 30 second cache.
+
 ## 0.1.0 - 2026-10-10
 
 First release.

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API reference | Papertrade Analytics docs</title>
+<meta name="description" content="The keyless JSON API behind the dashboard, its response fields, caching and errors.">
+<link rel="canonical" href="https://papertrade-analytics.pages.dev/docs/api">
+<link rel="alternate" type="text/markdown" href="https://papertrade-analytics.pages.dev/docs/api.md">
+<link rel="alternate" type="text/plain" href="https://papertrade-analytics.pages.dev/llms.txt" title="llms.txt">
+<meta property="og:title" content="API reference | Papertrade Analytics docs">
+<meta property="og:description" content="The keyless JSON API behind the dashboard, its response fields, caching and errors.">
+<meta property="og:url" content="https://papertrade-analytics.pages.dev/docs/api">
+<meta property="og:type" content="article">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23c2410c'/%3E%3Cpath d='M7 24V15m6 9V9m6 15v-7m6 7V12' stroke='%23fff7ec' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/docs/docs.css">
+<script src="/docs/docs.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"API reference","description":"The keyless JSON API behind the dashboard, its response fields, caching and errors.","url":"https://papertrade-analytics.pages.dev/docs/api","inLanguage":"en","license":"https://www.apache.org/licenses/LICENSE-2.0","isPartOf":{"@type":"WebSite","name":"Papertrade Analytics","url":"https://papertrade-analytics.pages.dev"}}</script>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<header class="bar">
+  <button type="button" class="icon menu" id="menu" aria-label="Open navigation" aria-expanded="false" aria-controls="side"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <a class="brand" href="/docs/" aria-label="Papertrade Analytics docs, home"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="6"/><path d="M7 24V15m6 9V9m6 15v-7m6 7V12"/></svg><span>Papertrade <b>Analytics</b> <em>docs</em></span></a>
+  <button type="button" class="search-open" id="search-open" aria-label="Search the docs" aria-keyshortcuts="/"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search</span><kbd>/</kbd></button>
+  <nav class="links" aria-label="Site"><a href="/">Dashboard</a><a href="https://github.com/nirholas/papertrade-analytics">GitHub</a><a href="/llms.txt">llms.txt</a><a href="/mcp">MCP</a></nav>
+  <button type="button" class="icon" id="theme" aria-label="Toggle dark and light theme"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-.9-.1-1.3A5.5 5.5 0 0 1 13.3 3.1 9 9 0 0 0 12 3z"/></svg></button>
+</header>
+<div class="shell">
+  <aside class="side" id="side" aria-label="Documentation"><nav><ul><li><a href="/docs/">Overview</a></li><li><a href="/docs/quickstart">Quickstart</a></li><li><a href="/docs/concepts">Concepts</a></li><li><a href="/docs/api" aria-current="page">API reference</a></li><li><a href="/docs/mcp">MCP server</a></li><li><a href="/docs/connect">Connect your AI</a></li><li><a href="/docs/discovery">Agent discovery</a></li><li><a href="/docs/self-hosting">Self-hosting on Cloudflare</a></li><li><a href="/docs/security">Security and limits</a></li><li><a href="/docs/faq">FAQ</a></li><li><a href="/docs/changelog">Changelog</a></li></ul></nav><p class="side-note"><a href="/docs/api.md">View as markdown</a></p></aside>
+  <main id="content" class="doc">
+    <article>
+<h1 id="api-reference">API reference</h1>
+<p>Base URL: <code>https://papertrade-analytics.pages.dev</code>. No key. CORS is open (<code>Access-Control-Allow-Origin: *</code>). The OpenAPI 3.1 document is at <a href="/openapi.json"><code>/openapi.json</code></a>; the MCP server has its own <a href="/docs/mcp">reference</a>.</p>
+<h2 id="get-api-metrics">GET /api/metrics<a class="anchor" href="#get-api-metrics" aria-label="Link to this section">#</a></h2>
+<p>One JSON document with everything on the dashboard. Cached 30 seconds in the Workers Cache; <code>X-Cache</code> is <code>HIT</code> or <code>MISS</code>. USD values are plain numbers.</p>
+<div class="code-block"><button type="button" class="copy" aria-label="Copy code">Copy</button><pre tabindex="0"><code class="language-bash">curl -s https://papertrade-analytics.pages.dev/api/metrics | jq '.markets[] | {symbol, priceUsd, longShare, volume24hUsd}'</code></pre></div>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Contents</th></tr></thead><tbody><tr><td><code>generatedAt</code>, <code>source</code></td><td>When it was built and provenance: <code>protocolBlock</code>, <code>protocolAt</code>, <code>historyAsOf</code>, <code>onchain</code>, <code>snapshots</code>.</td></tr><tr><td><code>protocol</code></td><td><code>tvlUsd</code>, <code>marginUsd</code>, <code>lpUsd</code>, <code>reserveUsd</code>, <code>queueUsd</code>, <code>allTimeVolumeUsd</code>, <code>volume24hUsd</code>, <code>openPositions</code>, <code>traders</code>, <code>trades</code>, <code>liquidatedVolumeUsd</code>, <code>traderPnlUsd</code>, <code>lifetimeFeesUsd</code>, <code>pendingFeesUsd</code>, <code>openNotionalUsd</code>, <code>houseOpenPnlUsd</code>.</td></tr><tr><td><code>deltas</code></td><td><code>tvl</code>, <code>lp</code>, <code>traders</code>, <code>openPositions</code> as <code>{h24, d7}</code>, plus <code>volume24h</code> (last 24h against the 24h before) and <code>trades24h</code>. Each delta is <code>{abs, pct, fromMs, toMs, spanMs, partial}</code>.</td></tr><tr><td><code>markets[]</code></td><td>BTC and ETH: <code>priceUsd</code>, <code>change24hPct</code>, <code>change7dPct</code>, <code>sparkline</code>, <code>volume24hUsd</code>, open long and short, <code>longShare</code>, cap open interest, caps and utilization, <code>maxLeverage</code>, <code>maxPositionUsd</code>, status flags, <code>impact</code>, <code>keepsExample</code>.</td></tr><tr><td><code>paper</code></td><td><code>supply</code>, <code>staked</code>, <code>stakedShare</code>, <code>mintRate</code>, <code>phase</code>, <code>curve</code>, <code>tailProgressToRate25Usd</code>, <code>reservePaper</code>.</td></tr><tr><td><code>staking</code></td><td><code>totalStaked</code>, <code>accRewardPerShareUsd</code>, <code>accRewardPerShareRaw</code>, <code>pendingRewardsUsd</code>, <code>rewardCapUsd</code>, <code>overflowAboveCapUsd</code>, <code>rewardsDistributedUsd</code>.</td></tr></tbody></table></div>
+<p>Errors: <code>502</code> with <code>{&quot;code&quot;:&quot;upstream_unavailable&quot;,&quot;message&quot;:&quot;...&quot;}</code> when the Papertrade API cannot be reached, and <code>405</code> for methods other than GET, HEAD and OPTIONS.</p>
+<h2 id="get-api-snapshots">GET /api/snapshots<a class="anchor" href="#get-api-snapshots" aria-label="Link to this section">#</a></h2>
+<p>House-book samples recorded every five minutes while a <code>SNAPSHOTS</code> KV namespace is bound. Returns <code>{intervalMs, recording, snapshots[]}</code>; the list is empty when nothing is bound. Each snapshot has <code>t</code>, <code>tvl</code>, <code>margin</code>, <code>lp</code>, <code>pnl</code>, <code>open</code> and long and short notional for each market.</p>
+<h2 id="api-papertrade">/api/papertrade/*<a class="anchor" href="#api-papertrade" aria-label="Link to this section">#</a></h2>
+<p>A same-origin proxy to the Papertrade API, which sends no CORS headers. It forwards only the public surface: GET reads under <code>/state/</code>, <code>/query/</code>, <code>/queue-rank/</code> and <code>/relayer/health</code>, the wallet live stream, and the POST routes that carry already-signed intents. It holds no keys and signs nothing. Point the SDK at it with <code>new PapertradeClient({ baseUrl: &#39;/api/papertrade&#39; })</code>. Other paths return <code>404 not_proxied</code>.</p>
+<h2 id="using-the-building-blocks-as-a-library">Using the building blocks as a library<a class="anchor" href="#using-the-building-blocks-as-a-library" aria-label="Link to this section">#</a></h2>
+<p>The pure functions behind the dashboard live in <code>src/</code> and are unit-tested on recorded responses: <code>buildMetrics</code> (the document above), <code>historyPoints</code>, <code>deltaOver</code>, <code>windowOverWindow</code> and <code>diffSeries</code> (time-series transforms), <code>houseSeries</code> (house book history), <code>traderRows</code>, <code>positionInsights</code> and <code>concentration</code> (leaderboard analysis), and <code>seriesToCsv</code>. They take plain inputs and return plain data, with no DOM or network access.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages"><a class="prev" href="/docs/concepts"><span>Previous</span>Concepts</a><a class="next" href="/docs/mcp"><span>Next</span>MCP server</a></nav>
+    <footer class="doc-foot"><p>Unofficial, not affiliated with Papertrade. High leverage can lose your whole margin. Not financial advice. <a href="https://github.com/nirholas/papertrade-analytics/edit/main/docs/api.md">Edit this page</a>.</p></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><h2>On this page</h2><ul><li class="d2"><a href="#get-api-metrics">GET /api/metrics</a></li><li class="d2"><a href="#get-api-snapshots">GET /api/snapshots</a></li><li class="d2"><a href="#api-papertrade">/api/papertrade/*</a></li><li class="d2"><a href="#using-the-building-blocks-as-a-library">Using the building blocks as a library</a></li></ul></nav>
+</div>
+<div class="search" id="search" role="dialog" aria-modal="true" aria-label="Search the docs" hidden>
+  <div class="search-box">
+    <input id="search-input" type="search" placeholder="Search the docs" autocomplete="off" spellcheck="false" aria-label="Search query" aria-controls="search-results">
+    <ul id="search-results" role="listbox" aria-label="Results"></ul>
+    <p class="search-hint" id="search-hint">Type to search. Enter opens the first result, Esc closes.</p>
+  </div>
+</div>
+</body>
+</html>

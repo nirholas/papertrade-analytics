@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Papertrade Analytics API",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Unofficial JSON API behind papertrade-analytics. Aggregates the public Papertrade API, Hyperliquid candles and HyperEVM reads. Not affiliated with Papertrade. High leverage can lose your whole margin.",
     "license": {
       "name": "Apache-2.0",
@@ -113,6 +113,209 @@
         "responses": {
           "200": {
             "description": "OpenAPI 3.1 document."
+          }
+        }
+      }
+    },
+    "/mcp": {
+      "post": {
+        "operationId": "mcp",
+        "summary": "Model Context Protocol server (Streamable HTTP, stateless, read-only)",
+        "description": "JSON-RPC 2.0 over HTTP. Supports initialize, notifications/initialized, ping, tools/list, tools/call, resources/list and prompts/list, as single messages or batches of up to 10. Tools: get_protocol_snapshot (Protocol snapshot), get_history (Protocol history series), get_open_interest (Open interest and skew), get_paper_economics (PAPER economics), get_market_stats (Market stats), get_top_traders (Top traders (leaderboard)), get_position_insights (Position insights), quote_position_outcome (Quote a position outcome (simulation)). No authentication. 60 requests per minute per client. Nothing here signs, sends or trades.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "const": "2.0"
+                  },
+                  "id": {
+                    "type": [
+                      "string",
+                      "integer"
+                    ]
+                  },
+                  "method": {
+                    "type": "string",
+                    "examples": [
+                      "tools/list",
+                      "tools/call"
+                    ]
+                  },
+                  "params": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "jsonrpc",
+                  "method"
+                ]
+              },
+              "examples": {
+                "listTools": {
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/list"
+                  }
+                },
+                "snapshot": {
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 2,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "get_protocol_snapshot",
+                      "arguments": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JSON-RPC response, or a single SSE message event when the client accepts only text/event-stream.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Notification accepted. No body."
+          },
+          "400": {
+            "description": "Parse error or invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "const": "2.0"
+                    },
+                    "id": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "jsonrpc",
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body over 64 KB."
+          },
+          "429": {
+            "description": "Rate limit exceeded. Retry-After says when."
+          }
+        }
+      },
+      "get": {
+        "operationId": "mcpInfo",
+        "summary": "Describe the MCP server",
+        "description": "Returns JSON with the server identity, tools and links to the docs. A GET that accepts only text/event-stream returns 405 (there is no server-initiated stream).",
+        "responses": {
+          "200": {
+            "description": "Server description.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "No SSE stream. Use POST."
+          }
+        }
+      }
+    },
+    "/.well-known/mcp/server-card.json": {
+      "get": {
+        "operationId": "getMcpServerCard",
+        "summary": "MCP server card",
+        "responses": {
+          "200": {
+            "description": "Server card with the full tool list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/agent-card.json": {
+      "get": {
+        "operationId": "getAgentCard",
+        "summary": "A2A agent card",
+        "responses": {
+          "200": {
+            "description": "Agent card with one skill per MCP tool.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llms.txt": {
+      "get": {
+        "operationId": "getLlmsTxt",
+        "summary": "Index for language models",
+        "responses": {
+          "200": {
+            "description": "Plain text.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -824,5 +1027,9 @@
         ]
       }
     }
+  },
+  "externalDocs": {
+    "description": "Documentation",
+    "url": "https://papertrade-analytics.pages.dev/docs/"
   }
 }

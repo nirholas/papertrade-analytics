@@ -1,0 +1,46 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://papertrade-analytics.pages.dev/api/metrics",
+      "service-desc": [
+        {
+          "href": "https://papertrade-analytics.pages.dev/openapi.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://papertrade-analytics.pages.dev/docs/api",
+          "type": "text/html"
+        }
+      ],
+      "service-meta": [
+        {
+          "href": "https://papertrade-analytics.pages.dev/llms.txt",
+          "type": "text/plain"
+        }
+      ]
+    },
+    {
+      "anchor": "https://papertrade-analytics.pages.dev/mcp",
+      "service-desc": [
+        {
+          "href": "https://papertrade-analytics.pages.dev/.well-known/mcp/server-card.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://papertrade-analytics.pages.dev/docs/mcp",
+          "type": "text/html"
+        }
+      ],
+      "service-meta": [
+        {
+          "href": "https://papertrade-analytics.pages.dev/llms.txt",
+          "type": "text/plain"
+        }
+      ]
+    }
+  ]
+}

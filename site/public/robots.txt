@@ -1,5 +1,36 @@
+# Papertrade Analytics is open data and open source. Agents are welcome.
+# Machine-readable entry points: /llms.txt, /openapi.json, /.well-known/mcp/server-card.json
+
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /api/papertrade/
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
 
 Sitemap: https://papertrade-analytics.pages.dev/sitemap.xml

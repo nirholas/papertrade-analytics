@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAQ | Papertrade Analytics docs</title>
+<meta name="description" content="Common questions about Papertrade Analytics data, the MCP server and the dashboard.">
+<link rel="canonical" href="https://papertrade-analytics.pages.dev/docs/faq">
+<link rel="alternate" type="text/markdown" href="https://papertrade-analytics.pages.dev/docs/faq.md">
+<link rel="alternate" type="text/plain" href="https://papertrade-analytics.pages.dev/llms.txt" title="llms.txt">
+<meta property="og:title" content="FAQ | Papertrade Analytics docs">
+<meta property="og:description" content="Common questions about Papertrade Analytics data, the MCP server and the dashboard.">
+<meta property="og:url" content="https://papertrade-analytics.pages.dev/docs/faq">
+<meta property="og:type" content="article">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23c2410c'/%3E%3Cpath d='M7 24V15m6 9V9m6 15v-7m6 7V12' stroke='%23fff7ec' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/docs/docs.css">
+<script src="/docs/docs.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"FAQ","description":"Common questions about Papertrade Analytics data, the MCP server and the dashboard.","url":"https://papertrade-analytics.pages.dev/docs/faq","inLanguage":"en","license":"https://www.apache.org/licenses/LICENSE-2.0","isPartOf":{"@type":"WebSite","name":"Papertrade Analytics","url":"https://papertrade-analytics.pages.dev"}}</script>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<header class="bar">
+  <button type="button" class="icon menu" id="menu" aria-label="Open navigation" aria-expanded="false" aria-controls="side"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <a class="brand" href="/docs/" aria-label="Papertrade Analytics docs, home"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="6"/><path d="M7 24V15m6 9V9m6 15v-7m6 7V12"/></svg><span>Papertrade <b>Analytics</b> <em>docs</em></span></a>
+  <button type="button" class="search-open" id="search-open" aria-label="Search the docs" aria-keyshortcuts="/"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search</span><kbd>/</kbd></button>
+  <nav class="links" aria-label="Site"><a href="/">Dashboard</a><a href="https://github.com/nirholas/papertrade-analytics">GitHub</a><a href="/llms.txt">llms.txt</a><a href="/mcp">MCP</a></nav>
+  <button type="button" class="icon" id="theme" aria-label="Toggle dark and light theme"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-.9-.1-1.3A5.5 5.5 0 0 1 13.3 3.1 9 9 0 0 0 12 3z"/></svg></button>
+</header>
+<div class="shell">
+  <aside class="side" id="side" aria-label="Documentation"><nav><ul><li><a href="/docs/">Overview</a></li><li><a href="/docs/quickstart">Quickstart</a></li><li><a href="/docs/concepts">Concepts</a></li><li><a href="/docs/api">API reference</a></li><li><a href="/docs/mcp">MCP server</a></li><li><a href="/docs/connect">Connect your AI</a></li><li><a href="/docs/discovery">Agent discovery</a></li><li><a href="/docs/self-hosting">Self-hosting on Cloudflare</a></li><li><a href="/docs/security">Security and limits</a></li><li><a href="/docs/faq" aria-current="page">FAQ</a></li><li><a href="/docs/changelog">Changelog</a></li></ul></nav><p class="side-note"><a href="/docs/faq.md">View as markdown</a></p></aside>
+  <main id="content" class="doc">
+    <article>
+<h1 id="faq">FAQ</h1>
+<p><strong>Is this official?</strong> No. It is an independent open-source project (Apache-2.0) that reads Papertrade&#39;s public data. It is not affiliated with or endorsed by Papertrade.</p>
+<p><strong>Can the MCP server trade for me?</strong> No. It has no keys, no wallet and no signing, and no tool places orders. <code>quote_position_outcome</code> only simulates settlement math.</p>
+<p><strong>Do I need an API key?</strong> No. The API and MCP server are keyless and CORS-open.</p>
+<p><strong>How fresh is the data?</strong> <code>/api/metrics</code> and the tools built on it are at most 30 seconds old; history and leaderboard reads at most 60 seconds. The <code>generatedAt</code> and <code>source</code> fields tell you exactly.</p>
+<p><strong>Why does <code>change7d</code> say <code>partial</code>?</strong> The protocol&#39;s hourly history is short and the protocol is young, so a 7 day window may not exist yet. The change is then measured from the earliest point and flagged, rather than invented.</p>
+<p><strong>Why is volume a cumulative number?</strong> The protocol history stores cumulative counters. Use <code>get_history</code> with <code>mode: &quot;per_bucket&quot;</code> for volume per hour or day.</p>
+<p><strong>Why do open interest numbers differ?</strong> Book notional (<code>openLongUsd</code>, from the house book) and cap-tracked open interest (<code>capOiLongUsd</code>, a base-asset quantity priced at the mark) are different measures. See <a href="/docs/concepts">Concepts</a>.</p>
+<p><strong><code>source.onchain</code> is false. Is something broken?</strong> HyperEVM RPCs rate-limit. PAPER supply then comes from the last good read or the indexer. Values are still correct to indexer precision.</p>
+<p><strong>ETH shows no price.</strong> Prices come from Hyperliquid candles. If that call fails, <code>priceUsd</code> is <code>null</code> rather than a guess; pass <code>entryPriceUsd</code> to <code>quote_position_outcome</code> to proceed.</p>
+<p><strong>My client says no tools were found.</strong> Use the Streamable HTTP transport (not SSE) and the exact URL <code>https://papertrade-analytics.pages.dev/mcp</code>. Per client syntax is in <a href="/docs/connect">Connect your AI</a>.</p>
+<p><strong>Can I embed the dashboard?</strong> Yes: <code>?embed=1</code> shows only the product, and framing is allowed from <code>*.pages.dev</code> hosts including <a href="https://papertrade-os.pages.dev/?open=analytics" rel="noopener">Papertrade OS</a>.</p>
+<p><strong>How do I get longer LP and open-interest history?</strong> Self-host with a <code>SNAPSHOTS</code> KV namespace: it records the house book every five minutes.</p>
+
+    </article>
+    <nav class="pager" aria-label="Pages"><a class="prev" href="/docs/security"><span>Previous</span>Security and limits</a><a class="next" href="/docs/changelog"><span>Next</span>Changelog</a></nav>
+    <footer class="doc-foot"><p>Unofficial, not affiliated with Papertrade. High leverage can lose your whole margin. Not financial advice. <a href="https://github.com/nirholas/papertrade-analytics/edit/main/docs/faq.md">Edit this page</a>.</p></footer>
+  </main>
+  
+</div>
+<div class="search" id="search" role="dialog" aria-modal="true" aria-label="Search the docs" hidden>
+  <div class="search-box">
+    <input id="search-input" type="search" placeholder="Search the docs" autocomplete="off" spellcheck="false" aria-label="Search query" aria-controls="search-results">
+    <ul id="search-results" role="listbox" aria-label="Results"></ul>
+    <p class="search-hint" id="search-hint">Type to search. Enter opens the first result, Esc closes.</p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Papertrade Analytics documentation</title>
+<meta name="description" content="Papertrade Analytics is an unofficial live dashboard, JSON API and read-only MCP server for the Papertrade perps exchange on HyperEVM.">
+<link rel="canonical" href="https://papertrade-analytics.pages.dev/docs/">
+<link rel="alternate" type="text/markdown" href="https://papertrade-analytics.pages.dev/docs/index.md">
+<link rel="alternate" type="text/plain" href="https://papertrade-analytics.pages.dev/llms.txt" title="llms.txt">
+<meta property="og:title" content="Papertrade Analytics documentation">
+<meta property="og:description" content="Papertrade Analytics is an unofficial live dashboard, JSON API and read-only MCP server for the Papertrade perps exchange on HyperEVM.">
+<meta property="og:url" content="https://papertrade-analytics.pages.dev/docs/">
+<meta property="og:type" content="article">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23c2410c'/%3E%3Cpath d='M7 24V15m6 9V9m6 15v-7m6 7V12' stroke='%23fff7ec' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/docs/docs.css">
+<script src="/docs/docs.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Overview","description":"Papertrade Analytics is an unofficial live dashboard, JSON API and read-only MCP server for the Papertrade perps exchange on HyperEVM.","url":"https://papertrade-analytics.pages.dev/docs/","inLanguage":"en","license":"https://www.apache.org/licenses/LICENSE-2.0","isPartOf":{"@type":"WebSite","name":"Papertrade Analytics","url":"https://papertrade-analytics.pages.dev"}}</script>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<header class="bar">
+  <button type="button" class="icon menu" id="menu" aria-label="Open navigation" aria-expanded="false" aria-controls="side"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <a class="brand" href="/docs/" aria-label="Papertrade Analytics docs, home"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="6"/><path d="M7 24V15m6 9V9m6 15v-7m6 7V12"/></svg><span>Papertrade <b>Analytics</b> <em>docs</em></span></a>
+  <button type="button" class="search-open" id="search-open" aria-label="Search the docs" aria-keyshortcuts="/"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search</span><kbd>/</kbd></button>
+  <nav class="links" aria-label="Site"><a href="/">Dashboard</a><a href="https://github.com/nirholas/papertrade-analytics">GitHub</a><a href="/llms.txt">llms.txt</a><a href="/mcp">MCP</a></nav>
+  <button type="button" class="icon" id="theme" aria-label="Toggle dark and light theme"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-.9-.1-1.3A5.5 5.5 0 0 1 13.3 3.1 9 9 0 0 0 12 3z"/></svg></button>
+</header>
+<div class="shell">
+  <aside class="side" id="side" aria-label="Documentation"><nav><ul><li><a href="/docs/" aria-current="page">Overview</a></li><li><a href="/docs/quickstart">Quickstart</a></li><li><a href="/docs/concepts">Concepts</a></li><li><a href="/docs/api">API reference</a></li><li><a href="/docs/mcp">MCP server</a></li><li><a href="/docs/connect">Connect your AI</a></li><li><a href="/docs/discovery">Agent discovery</a></li><li><a href="/docs/self-hosting">Self-hosting on Cloudflare</a></li><li><a href="/docs/security">Security and limits</a></li><li><a href="/docs/faq">FAQ</a></li><li><a href="/docs/changelog">Changelog</a></li></ul></nav><p class="side-note"><a href="/docs/index.md">View as markdown</a></p></aside>
+  <main id="content" class="doc">
+    <article>
+<h1 id="papertrade-analytics">Papertrade Analytics</h1>
+<p>Papertrade Analytics measures <a href="https://papertrade.xyz" rel="noopener">Papertrade</a>, the fully on-chain 1000x synthetic perpetuals exchange on Hyperliquid&#39;s HyperEVM (chain 999). It reads the public Papertrade API, Hyperliquid candles and the chain, and serves the result three ways:</p>
+<ul>
+<li><strong>A dashboard</strong> at <a href="https://papertrade-analytics.pages.dev">https://papertrade-analytics.pages.dev</a>: TVL, volume, LP equity, open interest, market skew, the PAPER mint curve, staking and leaderboard insights, with charts that export to CSV.</li>
+<li><strong>A keyless JSON API</strong>: <a href="/docs/api"><code>/api/metrics</code></a> returns every headline number in one document, cached for 30 seconds at the edge. The spec is at <a href="/openapi.json"><code>/openapi.json</code></a>.</li>
+<li><strong>A read-only MCP server</strong> at <code>https://papertrade-analytics.pages.dev/mcp</code>: 8 tools that let Claude, ChatGPT, Codex, Gemini, Cursor and any other MCP client answer questions about the protocol from live data. See <a href="/docs/mcp">MCP</a> and <a href="/docs/connect">Connect your AI</a>.</li>
+</ul>
+<blockquote>
+<p>Unofficial, not affiliated with Papertrade. High leverage can lose your whole margin. Nothing here is financial advice.</p>
+</blockquote>
+<h2 id="what-it-is-not">What it is not<a class="anchor" href="#what-it-is-not" aria-label="Link to this section">#</a></h2>
+<p>It does not trade. Nothing in this project signs a transaction, holds a key, sends funds or places an order. The MCP server cannot do those things either: its one tool that talks about positions, <code>quote_position_outcome</code>, is a pure simulation. Trading happens in your own wallet through the <a href="https://papertrade-terminal.pages.dev" rel="noopener">Papertrade terminal</a> or Papertrade itself.</p>
+<h2 id="where-the-numbers-come-from">Where the numbers come from<a class="anchor" href="#where-the-numbers-come-from" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>Data</th><th>Source</th></tr></thead><tbody><tr><td>TVL, balances, volume, open positions, fees, history</td><td>Papertrade public API (<code>/query/protocol/summary</code>, <code>/query/protocol/history</code>)</td></tr><tr><td>Open long and short notional per market</td><td><code>/state/house/current</code> (the house book)</td></tr><tr><td>Instrument limits, impact parameters, open interest caps</td><td><code>/state/trading</code></td></tr><tr><td>Mark prices and 24h and 7d change</td><td>Hyperliquid 1h candles</td></tr><tr><td>PAPER supply, staked total, reward accumulator</td><td>HyperEVM reads (indexer values when every RPC refuses)</td></tr><tr><td>Leaderboard</td><td><code>/state/leaderboard/accounts</code> and <code>/state/leaderboard/positions</code></td></tr></tbody></table></div>
+<p>All protocol math (<code>estimateClose</code>, <code>liquidationPriceRaw</code>, <code>paperMintRate</code>, the impact scale) comes from <a href="https://github.com/nirholas/papertrade-sdk" rel="noopener">papertrade-sdk</a>, which is checked against settled positions on mainnet.</p>
+<h2 id="next-steps">Next steps<a class="anchor" href="#next-steps" aria-label="Link to this section">#</a></h2>
+<ul>
+<li><a href="/docs/quickstart">Quickstart</a>: fetch data, call a tool, run it locally.</li>
+<li><a href="/docs/concepts">Concepts</a>: the Papertrade rules that change how you read the numbers.</li>
+<li><a href="/docs/connect">Connect your AI</a>: copy-paste setup for every major client.</li>
+</ul>
+
+    </article>
+    <nav class="pager" aria-label="Pages"><span></span><a class="next" href="/docs/quickstart"><span>Next</span>Quickstart</a></nav>
+    <footer class="doc-foot"><p>Unofficial, not affiliated with Papertrade. High leverage can lose your whole margin. Not financial advice. <a href="https://github.com/nirholas/papertrade-analytics/edit/main/docs/index.md">Edit this page</a>.</p></footer>
+  </main>
+  <nav class="toc" aria-label="On this page"><h2>On this page</h2><ul><li class="d2"><a href="#what-it-is-not">What it is not</a></li><li class="d2"><a href="#where-the-numbers-come-from">Where the numbers come from</a></li><li class="d2"><a href="#next-steps">Next steps</a></li></ul></nav>
+</div>
+<div class="search" id="search" role="dialog" aria-modal="true" aria-label="Search the docs" hidden>
+  <div class="search-box">
+    <input id="search-input" type="search" placeholder="Search the docs" autocomplete="off" spellcheck="false" aria-label="Search query" aria-controls="search-results">
+    <ul id="search-results" role="listbox" aria-label="Results"></ul>
+    <p class="search-hint" id="search-hint">Type to search. Enter opens the first result, Esc closes.</p>
+  </div>
+</div>
+</body>
+</html>

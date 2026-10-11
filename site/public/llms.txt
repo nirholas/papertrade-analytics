@@ -1,19 +1,55 @@
-# papertrade-analytics
+# Papertrade Analytics
 
-> Unofficial live analytics for Papertrade (papertrade.xyz), the 1000x synthetic perps exchange on HyperEVM (chain 999). Not affiliated with Papertrade. High leverage can lose your whole margin.
+> Unofficial live analytics for Papertrade, the 1000x synthetic perps exchange on HyperEVM: TVL, volume, open interest, market skew, PAPER economics and leaderboard insights. Read-only. Free JSON API and a keyless MCP server. Unofficial, not affiliated with Papertrade.
 
-Site: https://papertrade-analytics.pages.dev
-Source: https://github.com/nirholas/papertrade-analytics
-SDK: https://github.com/nirholas/papertrade-sdk
+Use the MCP server for tool calling, the REST API for plain HTTP. Nothing here signs, sends or trades. High leverage can lose your whole margin; this is data, not financial advice.
 
-## API (no key, CORS open, 30s edge cache)
+## Connect
 
-- GET /api/metrics : JSON. `protocol` (tvlUsd, marginUsd, lpUsd, reserveUsd, queueUsd, allTimeVolumeUsd, volume24hUsd, openPositions, traders, trades), `deltas` (24h and 7d changes, `partial` when history is shorter than the window), `markets[]` (BTC and ETH: priceUsd, change24hPct, change7dPct, volume24hUsd, openLongUsd, openShortUsd, longShare, cap utilization, maxLeverage, flags, impact parameters, keepsExample for a $100 500x +0.1% win), `paper` (supply, mintRate, phase, stakedShare, curve), `staking` (totalStaked, accRewardPerShareUsd, pendingRewardsUsd). All USD values are plain numbers.
-- GET /api/snapshots : recorded house-book samples (empty unless a KV namespace is bound).
-- GET /openapi.json : OpenAPI 3.1 spec.
+- MCP endpoint (Streamable HTTP, no auth): https://papertrade-analytics.pages.dev/mcp
+- [Connect your AI](https://papertrade-analytics.pages.dev/docs/connect.md): setup for Claude, Codex, ChatGPT, Gemini, Cursor, VS Code, Windsurf, Zed, Cline, Goose, Continue
+- [OpenAPI 3.1](https://papertrade-analytics.pages.dev/openapi.json)
+- [MCP server card](https://papertrade-analytics.pages.dev/.well-known/mcp/server-card.json)
+- [A2A agent card](https://papertrade-analytics.pages.dev/.well-known/agent-card.json)
+- [API catalog](https://papertrade-analytics.pages.dev/.well-known/api-catalog)
+
+## REST API (no key, CORS open, 30s edge cache)
+
+- GET https://papertrade-analytics.pages.dev/api/metrics : JSON. `protocol` (tvlUsd, marginUsd, lpUsd, reserveUsd, queueUsd, allTimeVolumeUsd, volume24hUsd, openPositions, traders, trades), `deltas` (24h and 7d changes, `partial` when history is shorter than the window), `markets[]` (BTC and ETH: priceUsd, change24hPct, change7dPct, volume24hUsd, openLongUsd, openShortUsd, longShare, cap utilization, maxLeverage, flags, impact parameters, keepsExample), `paper` (supply, mintRate, phase, stakedShare, curve), `staking`. All USD values are plain numbers.
+- GET https://papertrade-analytics.pages.dev/api/snapshots : recorded house-book samples (empty unless a KV namespace is bound).
 
 ## Notes
 
 - `source.onchain=false` means the HyperEVM RPC was rate-limited and PAPER supply came from the indexer.
 - Volume, PnL, trades and users in protocol history are cumulative; deltas are computed from them.
-- Wallet pages: https://papertrade-explorer.pages.dev/#/wallet/<address>
+
+## MCP tools
+
+- `get_protocol_snapshot`: Current Papertrade protocol KPIs in one call: TVL, LP and margin balances, 24h and all-time volume, open positions and open notional, traders, trades, liquidated volume, fees, and 24h and 7d changes.
+- `get_history`: Time series from the protocol history: TVL, volume, traders, trades, liquidated volume, trader PnL, PAPER supply or staked.
+- `get_open_interest`: Open interest per market: open long and short notional the house is carrying, long share (skew), the cap-tracked open interest and how full each side's cap is.
+- `get_paper_economics`: PAPER token economics: total supply, staked amount and share, the current mint rate (PAPER minted per $1 of trader loss) against its maximum, which curve phase the protocol is in, how much more tail progress is needed for the rate to fall to 25, plus staking figures (accRewardPerShare, pending rewards, reward cap, overflow).
+- `get_market_stats`: Per-market stats for BTC and ETH: mark price (Hyperliquid close), 24h and 7d change, 24h volume, open long and short, leverage and position limits, status flags (paused, closeOnly, openable), price-impact parameters, and what a $100 500x long that wins +0.1% keeps after fees.
+- `get_top_traders`: Leaderboard accounts for a window, ranked by a chosen key.
+- `get_position_insights`: How the biggest settled positions on the leaderboard were sized and levered: counts by leverage bucket and by notional bucket, long versus short notional, median leverage and median size.
+- `quote_position_outcome`: SIMULATION ONLY.
+
+## Docs
+
+- [Overview](https://papertrade-analytics.pages.dev/docs/index.md): Papertrade Analytics is an unofficial live dashboard, JSON API and read-only MCP server for the Papertrade perps exchange on HyperEVM.
+- [Quickstart](https://papertrade-analytics.pages.dev/docs/quickstart.md): Fetch live Papertrade metrics, call the MCP server, and run the dashboard locally in a few minutes.
+- [Concepts](https://papertrade-analytics.pages.dev/docs/concepts.md): The Papertrade rules that change how you read TVL, volume, open interest and PAPER numbers.
+- [API reference](https://papertrade-analytics.pages.dev/docs/api.md): The keyless JSON API behind the dashboard, its response fields, caching and errors.
+- [MCP server](https://papertrade-analytics.pages.dev/docs/mcp.md): Endpoint, transport, tools with input and output schemas, and worked examples for the read-only Papertrade Analytics MCP server.
+- [Connect your AI](https://papertrade-analytics.pages.dev/docs/connect.md): Copy-paste setup for Claude Code, Claude Desktop, claude.ai, the Claude API, Codex, ChatGPT, Gemini CLI, Cursor, VS Code, Windsurf, Zed, Cline, Goose and Continue.
+- [Agent discovery](https://papertrade-analytics.pages.dev/docs/discovery.md): The well-known files, cards and text indexes that let agents find the MCP server, the API and these docs without a human.
+- [Self-hosting on Cloudflare](https://papertrade-analytics.pages.dev/docs/self-hosting.md): Deploy your own copy of Papertrade Analytics, the API and the MCP server to Cloudflare Pages, with optional KV snapshots.
+- [Security and limits](https://papertrade-analytics.pages.dev/docs/security.md): What this project can and cannot do, rate limits, caching, headers, and how to report a vulnerability.
+- [FAQ](https://papertrade-analytics.pages.dev/docs/faq.md): Common questions about Papertrade Analytics data, the MCP server and the dashboard.
+- [Changelog](https://papertrade-analytics.pages.dev/docs/changelog.md): Release notes for Papertrade Analytics.
+
+## Optional
+
+- [Full documentation in one file](https://papertrade-analytics.pages.dev/llms-full.txt)
+- [Dashboard](https://papertrade-analytics.pages.dev/)
+- [Source code](https://github.com/nirholas/papertrade-analytics)
