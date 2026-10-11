@@ -16,6 +16,7 @@ import {
   type ProtocolHistory,
   type TradingState,
 } from 'papertrade-sdk';
+import { usd } from '../../../src/format.js';
 import { HOUSE_BOOK_COLUMNS, houseSeries, type HouseResolution } from '../../../src/house.js';
 import { positionInsights, settledPositions, traderRows, walletUrl } from '../../../src/insights.js';
 import { deltaOver, diffSeries, historyPoints, type Point } from '../../../src/transforms.js';
@@ -100,7 +101,6 @@ export const HISTORY_METRICS: Record<string, HistoryMetric> = {
 
 const pointsOut = (points: Point[]) => points.map((p) => ({ t: iso(p.time), timeMs: p.time, value: p.value }));
 
-const fmtUsd = (n: number | null | undefined): string => (n === null || n === undefined ? 'n/a' : n >= 1e6 ? `$${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `$${(n / 1e3).toFixed(1)}K` : `$${n.toFixed(2)}`);
 
 export const TOOLS: ToolDef<ToolContext>[] = [
   {
@@ -126,7 +126,7 @@ export const TOOLS: ToolDef<ToolContext>[] = [
     },
     summarize: (r) => {
       const p = (r as { protocol: Metrics['protocol'] }).protocol;
-      return `TVL ${fmtUsd(p.tvlUsd)}, 24h volume ${fmtUsd(p.volume24hUsd)}, ${p.openPositions} open positions, ${fmtUsd(p.openNotionalUsd)} open notional.`;
+      return `TVL ${usd(p.tvlUsd)}, 24h volume ${usd(p.volume24hUsd)}, ${p.openPositions} open positions, ${usd(p.openNotionalUsd)} open notional.`;
     },
   },
   {
@@ -257,7 +257,7 @@ export const TOOLS: ToolDef<ToolContext>[] = [
     },
     summarize: (r) => {
       const t = (r as { totals: { openNotionalUsd: number; longShare: number | null } }).totals;
-      return `${fmtUsd(t.openNotionalUsd)} open notional, ${t.longShare === null ? 'n/a' : (t.longShare * 100).toFixed(1) + '%'} long.`;
+      return `${usd(t.openNotionalUsd)} open notional, ${t.longShare === null ? 'n/a' : (t.longShare * 100).toFixed(1) + '%'} long.`;
     },
   },
   {
@@ -481,7 +481,7 @@ export const TOOLS: ToolDef<ToolContext>[] = [
     },
     summarize: (r) => {
       const x = r as { liquidated: boolean; netPnlUsd: number; bustDistancePct: number };
-      return `Simulation only. ${x.liquidated ? 'Liquidated, margin lost.' : `Net ${fmtUsd(x.netPnlUsd)}.`} Bust is ${x.bustDistancePct.toFixed(3)}% from entry.`;
+      return `Simulation only. ${x.liquidated ? 'Liquidated, margin lost.' : `Net ${usd(x.netPnlUsd)}.`} Bust is ${x.bustDistancePct.toFixed(3)}% from entry.`;
     },
   },
 ];

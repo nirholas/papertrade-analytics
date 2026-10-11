@@ -256,3 +256,13 @@ describe('tools against recorded protocol responses', () => {
     expect(noPrice.content[0].text).toContain('entryPriceUsd');
   });
 });
+
+describe('tool summaries', () => {
+  it('writes billions as billions, not as thousands of millions', () => {
+    const tool = TOOLS.find((t) => t.name === 'get_protocol_snapshot')!;
+    const text = tool.summarize!({ protocol: { tvlUsd: 91_024_094, volume24hUsd: 603_575_497_687, openPositions: 2537, openNotionalUsd: 1_739_742_465 } });
+    expect(text).toContain('24h volume $603.58B');
+    expect(text).toContain('$1.74B open notional');
+    expect(text).toContain('TVL $91.02M');
+  });
+});
