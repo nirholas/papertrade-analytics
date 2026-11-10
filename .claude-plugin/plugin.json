@@ -1,0 +1,18 @@
+{
+  "name": "papertrade-analytics",
+  "version": "0.2.0",
+  "description": "Live Papertrade protocol analytics for agents: TVL, volume, open interest, PAPER economics, leaderboard, via a keyless MCP server.",
+  "author": {
+    "name": "nirholas"
+  },
+  "repository": "https://github.com/nirholas/papertrade-analytics",
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "papertrade",
+    "hyperevm",
+    "analytics",
+    "perps"
+  ],
+  "homepage": "https://papertrade-analytics.pages.dev"
+}
