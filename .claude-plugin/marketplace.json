@@ -1,0 +1,20 @@
+{
+  "name": "papertrade-analytics",
+  "owner": {
+    "name": "nirholas"
+  },
+  "description": "Live Papertrade protocol analytics for agents: TVL, volume, open interest, PAPER economics, leaderboard, via a keyless MCP server.",
+  "plugins": [
+    {
+      "name": "papertrade-analytics",
+      "source": "./",
+      "description": "Live Papertrade protocol analytics for agents: TVL, volume, open interest, PAPER economics, leaderboard, via a keyless MCP server.",
+      "tags": [
+        "mcp",
+        "analytics",
+        "hyperevm",
+        "perps"
+      ]
+    }
+  ]
+}

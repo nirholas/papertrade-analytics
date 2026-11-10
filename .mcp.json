@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "papertrade-analytics": {
+      "type": "http",
+      "url": "https://papertrade-analytics.pages.dev/mcp"
+    }
+  }
+}
