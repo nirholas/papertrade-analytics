@@ -7,8 +7,9 @@
   "plugins": [
     {
       "name": "papertrade-analytics",
-      "source": "./",
+      "source": "./plugins/papertrade-analytics",
       "description": "Live Papertrade protocol analytics for agents: TVL, volume, open interest, PAPER economics, leaderboard, via a keyless MCP server.",
+      "category": "development",
       "tags": [
         "mcp",
         "analytics",
